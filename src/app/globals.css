@@ -25,3 +25,81 @@ body {
     text-wrap: balance;
   }
 }
+
+@keyframes border-move {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@layer utilities {
+  .animate-border {
+    background: linear-gradient(
+      60deg,
+      #8b5cf6,
+      /* Violet */ #a78bfa,
+      #ec4899,
+      /* Pink */ #a78bfa,
+      #8b5cf6 /* Violet */
+    );
+    background-size: 300% 300%;
+    animation: border-move 4s ease infinite;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+
+  .animate-border::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    bottom: -2px;
+    left: -2px;
+    background: inherit;
+    border-radius: inherit;
+    z-index: -1;
+  }
+}
+
+@keyframes border-gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@layer utilities {
+  .animate-border-gradient {
+    position: relative;
+    background-clip: padding-box;
+    border: 2px solid transparent;
+  }
+
+  .animate-border-gradient::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    bottom: -2px;
+    left: -2px;
+    background: linear-gradient(
+      60deg,
+      #8b5cf6,
+      /* Violet */ #a78bfa,
+      #ec4899,
+      /* Pink */ #a78bfa,
+      #8b5cf6 /* Violet */
+    );
+    background-size: 300% 300%;
+    animation: border-gradient 10s ease infinite;
+    border-radius: inherit;
+    z-index: -1;
+  }
+}
