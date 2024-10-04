@@ -1,10 +1,32 @@
 "use client";
 
-import { usePrivy } from "@privy-io/react-auth";
-import Link from "next/link";
+import usePimlico from "@/hooks/use-pimlico";
+import { useLogin } from "@privy-io/react-auth";
+// import { useRouter } from "next/navigation";
 
 const Hero = () => {
-  const { authenticated } = usePrivy();
+  // const router = useRouter();
+  const { predictSmartAccountAddress } = usePimlico();
+  const { login } = useLogin({
+    onComplete: async (user, isNewUser) => {
+      const smartAccountAddress = await predictSmartAccountAddress();
+      console.log("smartAccountAddress", smartAccountAddress);
+      if (isNewUser) {
+        // await fetch("/api/users", {
+        //   method: "POST",
+        //   body: JSON.stringify({
+        //     email: user.email?.address,
+        //     address: user.wallet?.address,
+        //     smartAccountAddress,
+        //   }),
+        //   headers: {
+        //     "Content-Type": "application/json",
+        //   },
+        // });
+      }
+      // router.push("/dashboard"); // cazzo
+    },
+  });
 
   return (
     <div className="flex justify-center items-center h-full">
@@ -22,23 +44,13 @@ const Hero = () => {
             <li>✓ Class scheduling and attendance tracking</li>
             <li>✓ Performance analytics and reporting</li>
           </ul>
-          <Link href="/signup">
-            <button
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-md transition duration-300"
-              disabled={authenticated}
-            >
-              {authenticated ? "Dashboard" : "Get Started Free"}
-            </button>
-          </Link>
+          <button
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-md transition duration-300"
+            onClick={() => login()}
+          >
+            Get started
+          </button>
         </div>
-        {!authenticated && (
-          <p className="text-sm text-gray-500">
-            Already have an account?{" "}
-            <Link href="/login" className="text-blue-500 hover:underline">
-              Log in
-            </Link>
-          </p>
-        )}
       </div>
     </div>
   );
