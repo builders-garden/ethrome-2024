@@ -44,7 +44,7 @@ model Owner {
 model Gym {
   id                 String            @id
   name               String
-  monthlyFee         Int
+  monthlyFee         Float
   cashbackPercentage Float
   address            String
   createdAt          DateTime          @default(now())
