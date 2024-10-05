@@ -16,7 +16,7 @@ import { sepolia } from "viem/chains";
 import { useBalance, useReadContracts, useWalletClient } from "wagmi";
 
 const Fluid = () => {
-  const { predictSmartAccountAddress, smartAccountClient } = usePimlico();
+  const { predictSmartAccountAddress } = usePimlico();
   const { authenticated, user } = usePrivy();
   const [smartAccount, setSmartAccount] = useState<`0x${string}` | undefined>(
     undefined
@@ -29,9 +29,6 @@ const Fluid = () => {
       setAccount(user?.wallet?.address as `0x${string}`);
     }
   }, [authenticated, user]);
-  console.log("user", user?.wallet?.address);
-  console.log("user2", walletClient?.account.address);
-  // const [smartAccountBalance, setSmartAccountBalance] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     async function getSmartAccount() {
@@ -44,6 +41,7 @@ const Fluid = () => {
   }, [authenticated, predictSmartAccountAddress]);
 
   console.log("smartAccount", smartAccount);
+  console.log("user", user?.wallet?.address);
 
   const { data: balanceResult, isFetching: isFetchingBalance } =
     useReadContracts({

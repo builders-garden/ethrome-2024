@@ -8,11 +8,10 @@ import {
   SuperETHAddress,
 } from "@/lib/constants";
 import { encodeFunctionData, parseEther } from "viem";
-import { useBalance, useReadContracts, useWalletClient } from "wagmi";
+import { useBalance, useReadContract, useWalletClient } from "wagmi";
 import Welcome from "@/components/user/welcome";
 import CalendarStreak from "@/components/calendar-streak";
 import CustomBarChart from "@/components/charts/custom-bar-chart";
-import { Header } from "@/components/header";
 import usePimlico from "@/hooks/use-pimlico";
 
 export default function User() {
@@ -26,20 +25,6 @@ export default function User() {
     address: walletClient?.account.address,
   });
 
-  // const [userAccount, setUserAccount] = useState<`0x${string}` | undefined>(
-  //   undefined
-  // );
-
-  // useEffect(() => {
-  //   setUserAccount(walletClient?.account.address);
-  // }, [walletClient?.account]);
-
-  /**
-   * Handle user monthly deposit
-   * it needs to perform 2 transactions:
-   * 1. transfer an x% of the fee to the gym account
-   * 2. transfer the rest using the SuperToken contract
-   */
   async function handleUserMonthlyDeposit() {
     const transactionHash = await smartAccountClient?.sendTransaction({
       calls: [
@@ -65,19 +50,14 @@ export default function User() {
   }
 
   const { data: balanceResult, isFetching: isFetchingBalance } =
-    useReadContracts({
-      allowFailure: false,
-      contracts: [
-        {
-          address: SuperETHAddress,
-          abi: ISETHABI,
-          functionName: "balanceOf",
-          args: [smartAccountClient?.account?.address],
-        },
-      ],
+    useReadContract({
+      address: SuperETHAddress,
+      abi: ISETHABI,
+      functionName: "balanceOf",
+      args: [smartAccountClient?.account?.address],
     });
   if (!isFetchingBalance) {
-    console.log("FETCHED: balanceResult", balanceResult);
+    console.log("FETCHED: super balance", balanceResult);
   }
 
   async function handleUserWithdraw() {
@@ -88,7 +68,7 @@ export default function User() {
           data: encodeFunctionData({
             abi: ISETHABI,
             functionName: "downgradeToETH",
-            args: [balanceResult?.[0]]
+            args: [balanceResult]
           }),
         }
       ]
@@ -98,8 +78,8 @@ export default function User() {
 
   console.log("ethBalance", ethBalance);
 
-export default function Home() {
   const cashback = 2;
+
   return (
     <div className="w-full min-h-screen">
       <Welcome name="John Doe" weeklyCompleted={2} weeklyGoal={4} />
@@ -122,8 +102,7 @@ export default function Home() {
         laborum officia aliquip. Lorem id laborum aliquip consequat veniam
         officia. Enim voluptate id esse et veniam laborum sit dolore labore.
       </div>
-      <div className="w-full h-full">
-        <Header />
+      <div className="w-full h-full mt-8">
         <h1>Pay your month subscription</h1>
         <h2>ETH Balance</h2>
         <code>
