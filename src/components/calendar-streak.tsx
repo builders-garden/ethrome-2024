@@ -35,7 +35,7 @@ const CalendarStreak = () => {
   };
 
   return (
-    <div className="flex flex-col w-full py-5 px-4">
+    <div className="flex flex-col w-full px-4 rounded-xl">
       <h1 className="text-2xl font-bold">Your Workouts</h1>
       <Calendar
         mode="multiple"

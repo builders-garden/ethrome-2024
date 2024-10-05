@@ -23,8 +23,8 @@ const IconButton = ({
       <Button
         variant={isQr ? (isActive ? "outline" : "default") : "ghost"}
         className={`px-3 py-6 ${
-          isActive ? "text-primary hover:text-primary" : ""
-        }`}
+          isActive ? "text-red-500" : ""
+        } active:bg-none focus-visible:!bg-none hover:bg-none`}
       >
         {icon}
       </Button>
@@ -70,7 +70,7 @@ const AppBar = () => {
   ];
 
   return (
-    <div className="flex items-center justify-between px-1 py-2 rounded-md bg-[#FFE0E7]">
+    <div className="flex items-center justify-between px-1 py-2 rounded-t-xl bg-red-200">
       {icons.map((icon) => (
         <IconButton
           key={icon.id}

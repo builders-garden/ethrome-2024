@@ -14,6 +14,9 @@ import Welcome from "@/components/user/welcome";
 import CalendarStreak from "@/components/calendar-streak";
 import CustomBarChart from "@/components/charts/custom-bar-chart";
 import usePimlico from "@/hooks/use-pimlico";
+import Divider from "@/components/divider";
+import Image from "next/image";
+import { useState } from "react";
 
 export default function User() {
   const { smartAccountClient } = usePimlico();
@@ -93,18 +96,35 @@ export default function User() {
 
   const cashback = 2;
 
+  const [subscriptionActive, setSubscriptionActive] = useState(true)
+
   return (
-    <div className="w-full min-h-screen">
-      <Welcome name="John Doe" weeklyCompleted={2} weeklyGoal={4} />
-      <div className="bg-white rounded-xl shadow-md p-4 flex justify-between items-center">
-        <h2 className="text-xl font-medium text-gray-700">Your cashback</h2>
-        <div className="flex flex-col items-end">
-          <span className="text-sm text-gray-500">Available balance</span>
-          <span className="text-4xl font-bold text-green-600">
+    <div className="w-full min-h-screen flex flex-col gap-4">
+      <Welcome name="John" weeklyCompleted={2} weeklyGoal={4} />
+      <Divider />
+      <div className="rounded-xl p-4 py-0 flex justify-start items-center">
+        <div className="flex flex-col items-start gap-1 w-full">
+          <span className="text-xl font-medium">Your cashback</span>
+          <span className="text-4xl font-extrabold text-red-500">
             ${(cashback * 0.15).toFixed(2)}
           </span>
         </div>
+        <div className="flex flex-col items-start gap-1 w-full">
+          <span className="text-xl font-medium">Your subscription</span>
+          <div className="flex gap-1 items-center">
+            <span className="text-4xl font-extrabold">
+              {subscriptionActive ? "Active" : "Expired"}
+            </span>
+            <Image
+              src={`/images/${subscriptionActive ? "+" : "-"}1.png`}
+              alt="ok"
+              width={25}
+              height={25}
+            />
+          </div>
+        </div>
       </div>
+      <Divider />
       <CalendarStreak />
       <CustomBarChart />
       <div className="flex flex-col items-center justify-center">

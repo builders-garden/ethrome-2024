@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -61,13 +57,54 @@ body {
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-}
 
-@layer base {
+  @font-face {
+    font-family: 'Cacophony';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Cacophony'), url('https://fonts.cdnfonts.com/s/106084/Cacophony-Regular.woff') format('woff');
+  }
+
+  @font-face {
+    font-family: 'Rengita';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Rengita'), url('https://fonts.cdnfonts.com/s/105433/Rengita.woff') format('woff');
+  }
+
+  @font-face {
+    font-family: 'Laachir Deeper';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Laachir Deeper'), url('https://fonts.cdnfonts.com/s/105719/LaachirDeeper-Regular.woff') format('woff');
+  }
+  @font-face {
+      font-family: 'Laachir Deeper';
+      font-style: normal;
+      font-weight: 300;
+      src: local('Laachir Deeper'), url('https://fonts.cdnfonts.com/s/105719/LaachirDeeper-Light.woff') format('woff');
+  }
+  @font-face {
+      font-family: 'Laachir Deeper';
+      font-style: normal;
+      font-weight: 700;
+      src: local('Laachir Deeper'), url('https://fonts.cdnfonts.com/s/105719/LaachirDeeper-Bold.woff') format('woff');
+  }
+  @font-face {
+      font-family: 'Laachir Deeper';
+      font-style: normal;
+      font-weight: 800;
+      src: local('Laachir Deeper'), url('https://fonts.cdnfonts.com/s/105719/LaachirDeeper-ExtraBold.woff') format('woff');
+  }
+
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-slate-100 text-foreground;
+  }
+  span {
+    @apply !leading-none;
   }
 }
