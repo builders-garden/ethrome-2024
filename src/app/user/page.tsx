@@ -1,5 +1,5 @@
 "use client";
-import Navbar from "@/components/navbar";
+
 import {
   gymSmartAccount,
   gymUserFee,
@@ -9,6 +9,10 @@ import {
 } from "@/lib/constants";
 import { parseEther } from "viem";
 import { useBalance, useWalletClient } from "wagmi";
+import Welcome from "@/components/user/welcome";
+import CalendarStreak from "@/components/calendar-streak";
+import CustomBarChart from "@/components/charts/custom-bar-chart";
+import { Header } from "@/components/header";
 
 export default function User() {
   // const { smartAccountClient } = usePimlico();
@@ -55,21 +59,36 @@ export default function User() {
   console.log("ethBalance", ethBalance);
 
   return (
-    <div className="w-full h-full">
-      <Navbar />
-      <h1>Pay your month subscription</h1>
-      <h2>ETH Balance</h2>
-      <code>
-        {`
-            Amount: ${ethBalance.data?.value}
-            Decimals: ${ethBalance?.data?.decimals}
-            Symbol: ${ethBalance?.data?.symbol}
-          `}
-      </code>
-      <p>Amount to pay: {gymUserFee} ETH</p>
-      <p>Max cashback value: {gymUserFee * gymUserMaxCashbackPercentage}</p>
-      <p>Max cashback (%): {gymUserMaxCashbackPercentage * 100}%</p>
-      <button onClick={handleUserMonthlyDeposit}>Deposit</button>
+    <div className="flex-grow overflow-y-auto">
+      <div className="items-center max-w-sm lg:max-w-md bg-background rounded-xl p-2 mx-auto">
+        <Welcome name="John Doe" weeklyCompleted={2} weeklyGoal={4} />
+        <CalendarStreak />
+        <CustomBarChart />
+        <div className="flex flex-col items-center justify-center">
+          Eu laboris sunt fugiat quis Lorem proident non officia voluptate sunt
+          id veniam consequat voluptate quis. Ea magna nulla duis id esse nisi
+          qui nostrud. Reprehenderit dolore aliqua nostrud ut sint esse fugiat
+          exercitation qui enim. Magna minim sunt enim. Nulla ad ea deserunt
+          laborum officia aliquip. Lorem id laborum aliquip consequat veniam
+          officia. Enim voluptate id esse et veniam laborum sit dolore labore.
+        </div>
+      </div>
+      <div className="w-full h-full">
+        <Header />
+        <h1>Pay your month subscription</h1>
+        <h2>ETH Balance</h2>
+        <code>
+          {`
+              Amount: ${ethBalance.data?.value}
+              Decimals: ${ethBalance?.data?.decimals}
+              Symbol: ${ethBalance?.data?.symbol}
+            `}
+        </code>
+        <p>Amount to pay: {gymUserFee} ETH</p>
+        <p>Max cashback value: {gymUserFee * gymUserMaxCashbackPercentage}</p>
+        <p>Max cashback (%): {gymUserMaxCashbackPercentage * 100}%</p>
+        <button onClick={handleUserMonthlyDeposit}>Deposit</button>
+      </div>
     </div>
   );
 }
