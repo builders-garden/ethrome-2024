@@ -3,8 +3,11 @@ import prisma from "./prisma";
 
 export async function getTrainingSessionsByUserId(
   userId: string
-): Promise<TrainingSession[] | null> {
+): Promise<TrainingSession[]> {
   return await prisma.trainingSession.findMany({
+    orderBy: {
+      createdAt: "desc",
+    },
     where: {
       userId,
     },

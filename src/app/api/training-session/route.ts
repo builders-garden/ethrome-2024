@@ -1,46 +1,49 @@
 import {
   createTrainingSession,
   getTrainingSessionById,
+  getTrainingSessionsByUserId,
+  getUserById,
   updateTrainingSession,
+  updateUser,
 } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 
 export enum TrainingSessionStatus {
-  PENDING = "PENDING",
-  ACCEPTED = "ACCEPTED",
-  TERMINATED = "TERMINATED",
-  REJECTED = "REJECTED",
+  ENTERED = "ENTERED",
+  LEFT = "LEFT",
 }
 
 const postHandler = async (req: NextRequest) => {
-  const { status, gymId } = await req.json();
-  if (!status || !gymId) {
+  const { userId } = await req.json();
+  if (!userId) {
     return NextResponse.json(
       {
         status: "nok",
-        error: "Missing required fields (status, gymId)",
+        error: "Missing userId!",
       },
       { status: 400, statusText: "Bad Request" }
     );
   }
-  if (!Object.values(TrainingSessionStatus).includes(status)) {
+  const user = await getUserById(userId);
+  if (!user) {
     return NextResponse.json(
       {
         status: "nok",
-        error: "Invalid status",
+        error: "User not found",
       },
-      { status: 400, statusText: "Bad Request" }
+      { status: 404, statusText: "Not Found" }
     );
   }
   try {
-    const result = await createTrainingSession({
+    const trainingSession = await createTrainingSession({
       id: uuid(),
-      status,
-      gymId,
+      status: TrainingSessionStatus.ENTERED,
+      gymId: user.gymId,
+      userId,
     });
     return NextResponse.json(
-      { status: "ok", trainingSession: result },
+      { status: "ok", data: trainingSession },
       {
         status: 201,
         statusText: "Created",
@@ -75,52 +78,58 @@ const getHandler = async (req: NextRequest) => {
 };
 
 const putHandler = async (req: NextRequest) => {
-  const { id, status, userId, gymId, secret } = await req.json();
-  if (!id || !status || !userId || !gymId) {
+  const { userId } = await req.json();
+  if (!userId) {
     return NextResponse.json(
       {
         status: "nok",
-        error: "Missing required fields (id, status, userId, gymId)",
+        error: "Missing userId!",
       },
       { status: 400, statusText: "Bad Request" }
     );
   }
-  if (!Object.values(TrainingSessionStatus).includes(status)) {
+  const user = await getUserById(userId);
+  if (!user) {
     return NextResponse.json(
       {
         status: "nok",
-        error: "Invalid status",
-      },
-      { status: 400, statusText: "Bad Request" }
-    );
-  }
-  const existingTrainingSession = await getTrainingSessionById(id);
-  if (!existingTrainingSession) {
-    return NextResponse.json(
-      {
-        status: "nok",
-        error: "Training session not found",
+        error: "User not found",
       },
       { status: 404, statusText: "Not Found" }
     );
   }
+  const existingTrainingSessions = await getTrainingSessionsByUserId(userId);
+  if (existingTrainingSessions?.length == 0) {
+    return NextResponse.json({
+      status: "nok",
+      error: `Missing valid training session for user ${userId}`,
+    });
+  }
+  const lastTrainingSession = existingTrainingSessions[0];
+  if (lastTrainingSession.status != TrainingSessionStatus.ENTERED) {
+    return NextResponse.json({
+      status: "nok",
+      error: "This training session has not a valid status",
+    });
+  }
   try {
-    if (secret) {
-      if (secret !== process.env.SECRET) {
-        return NextResponse.json(
-          {
-            status: "nok",
-            error: "Invalid secret",
-          },
-          { status: 403, statusText: "Forbidden" }
-        );
-      }
-    }
-
-    const result = await updateTrainingSession(id, {
-      ...existingTrainingSession,
-      status,
-      userId,
+    // TODO: calculate here the stream AMOUNT
+    const cashback = 1;
+    const result = await updateTrainingSession(lastTrainingSession.id, {
+      ...lastTrainingSession,
+      status: TrainingSessionStatus.LEFT,
+      cashback,
+    });
+    // update user cashback fields
+    // check if it's a new month
+    const now = new Date();
+    await updateUser(userId, {
+      ...user,
+      monthlyCashback:
+        now.getMonth() != new Date(user.updatedAt).getMonth()
+          ? cashback
+          : user.monthlyCashback + cashback,
+      totalCashback: user.totalCashback + cashback,
     });
     return NextResponse.json(
       { status: "ok", trainingSession: result },
