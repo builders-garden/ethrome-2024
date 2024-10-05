@@ -5,6 +5,7 @@ import { PrivyClientConfig, PrivyProvider } from "@privy-io/react-auth";
 import { WagmiProvider } from "@privy-io/wagmi";
 import { wagmiConfig } from "@/lib/wagmi";
 import { sepolia } from "viem/chains";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +28,14 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
     <PrivyProvider appId="cm1ursrn606y7c56nfnh2j8oi" config={privyConfig}>
       <QueryClientProvider client={queryClient}>
         <WagmiProvider config={wagmiConfig}>
-          <main className="h-full">{children}</main>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
         </WagmiProvider>
       </QueryClientProvider>
     </PrivyProvider>

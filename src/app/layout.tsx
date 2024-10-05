@@ -27,9 +27,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased light`}
       >
-        <Providers>{children}</Providers>
+        <main className="min-h-screen items-center justify-center">
+          <Providers>{children}</Providers>
+        </main>
       </body>
     </html>
   );
