@@ -6,8 +6,8 @@ import {
   CFAv1ForwarderAddress,
   gymUserFee,
   gymUserMaxCashbackPercentage,
-  ISETHABI,
-  SuperETHAddress,
+  ISuperTokenABI,
+  SuperUSDCAddress,
 } from "@/lib/constants";
 import { usePrivy } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
@@ -48,19 +48,19 @@ const Fluid = () => {
       allowFailure: false,
       contracts: [
         {
-          address: SuperETHAddress,
-          abi: ISETHABI,
+          address: SuperUSDCAddress,
+          abi: ISuperTokenABI,
           functionName: "balanceOf",
           args: [user?.wallet?.address],
         },
         {
-          address: SuperETHAddress,
-          abi: ISETHABI,
+          address: SuperUSDCAddress,
+          abi: ISuperTokenABI,
           functionName: "decimals",
         },
         {
-          address: SuperETHAddress,
-          abi: ISETHABI,
+          address: SuperUSDCAddress,
+          abi: ISuperTokenABI,
           functionName: "symbol",
         },
       ],
@@ -90,7 +90,7 @@ const Fluid = () => {
         chain: sepolia,
         args: [
           // token address
-          SuperETHAddress,
+          SuperUSDCAddress,
           // sender
           account,
           // receiver
@@ -120,7 +120,7 @@ const Fluid = () => {
         chain: sepolia,
         args: [
           // token address
-          SuperETHAddress,
+          SuperUSDCAddress,
           // sender
           account,
           // receiver

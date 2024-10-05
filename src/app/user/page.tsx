@@ -4,10 +4,11 @@ import {
   gymSmartAccount,
   gymUserFee,
   gymUserMaxCashbackPercentage,
-  ISETHABI,
-  SuperETHAddress,
+  ISuperTokenABI,
+  SuperUSDCAddress,
+  USDCAddress
 } from "@/lib/constants";
-import { encodeFunctionData, parseEther } from "viem";
+import { encodeFunctionData, erc20Abi, parseEther } from "viem";
 import { useBalance, useReadContract, useWalletClient } from "wagmi";
 import Welcome from "@/components/user/welcome";
 import CalendarStreak from "@/components/calendar-streak";
@@ -26,22 +27,34 @@ export default function User() {
   });
 
   async function handleUserMonthlyDeposit() {
+    const directFeeToGym = parseEther(
+      (gymUserFee * (1 - gymUserMaxCashbackPercentage)).toString()
+    )
+    const maxCashbackAmount = parseEther((gymUserFee * gymUserMaxCashbackPercentage).toString())
     const transactionHash = await smartAccountClient?.sendTransaction({
       calls: [
         {
-          to: gymSmartAccount,
-          value: parseEther(
-            (gymUserFee * (1 - gymUserMaxCashbackPercentage)).toString()
-          ),
-          data: "0x",
+          to: USDCAddress,
+          data: encodeFunctionData({
+            abi: erc20Abi,
+            functionName: "transfer",
+            args: [gymSmartAccount, directFeeToGym],
+          }),
         },
         {
-          to: SuperETHAddress,
-          value: parseEther((gymUserFee * gymUserMaxCashbackPercentage).toString()),
+          to: USDCAddress,
           data: encodeFunctionData({
-            abi: ISETHABI,
-            functionName: "upgradeByETHTo",
-            args: [gymSmartAccount]
+            abi: erc20Abi,
+            functionName: "approve",
+            args: [SuperUSDCAddress, maxCashbackAmount],
+          }),
+        },
+        {
+          to: SuperUSDCAddress,
+          data: encodeFunctionData({
+            abi: ISuperTokenABI,
+            functionName: "upgradeTo",
+            args: [gymSmartAccount, maxCashbackAmount, "0x"]
           }),
         },
       ],
@@ -51,8 +64,8 @@ export default function User() {
 
   const { data: balanceResult, isFetching: isFetchingBalance } =
     useReadContract({
-      address: SuperETHAddress,
-      abi: ISETHABI,
+      address: SuperUSDCAddress,
+      abi: ISuperTokenABI,
       functionName: "balanceOf",
       args: [smartAccountClient?.account?.address],
     });
@@ -64,10 +77,10 @@ export default function User() {
     const txHash = await smartAccountClient?.sendTransaction({
       calls: [
         {
-          to: SuperETHAddress,
+          to: SuperUSDCAddress,
           data: encodeFunctionData({
-            abi: ISETHABI,
-            functionName: "downgradeToETH",
+            abi: ISuperTokenABI,
+            functionName: "downgrade",
             args: [balanceResult]
           }),
         }
