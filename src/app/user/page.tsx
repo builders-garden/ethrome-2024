@@ -1,9 +1,85 @@
+"use client";
+
+import {
+  gymSmartAccount,
+  gymUserFee,
+  gymUserMaxCashbackPercentage,
+  ISETHABI,
+  SuperETHAddress,
+} from "@/lib/constants";
+import { encodeFunctionData, parseEther } from "viem";
+import { useBalance, useReadContract, useWalletClient } from "wagmi";
 import Welcome from "@/components/user/welcome";
 import CalendarStreak from "@/components/calendar-streak";
 import CustomBarChart from "@/components/charts/custom-bar-chart";
+import usePimlico from "@/hooks/use-pimlico";
 
-export default function Home() {
+export default function User() {
+  const { smartAccountClient } = usePimlico();
+  const { data: walletClient } = useWalletClient();
+
+  console.log("smartAccount", smartAccountClient?.account?.address);
+  console.log("wallet", walletClient?.account.address);
+
+  const ethBalance = useBalance({
+    address: walletClient?.account.address,
+  });
+
+  async function handleUserMonthlyDeposit() {
+    const transactionHash = await smartAccountClient?.sendTransaction({
+      calls: [
+        {
+          to: gymSmartAccount,
+          value: parseEther(
+            (gymUserFee * (1 - gymUserMaxCashbackPercentage)).toString()
+          ),
+          data: "0x",
+        },
+        {
+          to: SuperETHAddress,
+          value: parseEther((gymUserFee * gymUserMaxCashbackPercentage).toString()),
+          data: encodeFunctionData({
+            abi: ISETHABI,
+            functionName: "upgradeByETHTo",
+            args: [gymSmartAccount]
+          }),
+        },
+      ],
+    })
+    console.log("tx", transactionHash)
+  }
+
+  const { data: balanceResult, isFetching: isFetchingBalance } =
+    useReadContract({
+      address: SuperETHAddress,
+      abi: ISETHABI,
+      functionName: "balanceOf",
+      args: [smartAccountClient?.account?.address],
+    });
+  if (!isFetchingBalance) {
+    console.log("FETCHED: super balance", balanceResult);
+  }
+
+  async function handleUserWithdraw() {
+    const txHash = await smartAccountClient?.sendTransaction({
+      calls: [
+        {
+          to: SuperETHAddress,
+          data: encodeFunctionData({
+            abi: ISETHABI,
+            functionName: "downgradeToETH",
+            args: [balanceResult]
+          }),
+        }
+      ]
+    })
+    console.log("tx", txHash)
+  }
+
+  console.log("ethBalance", ethBalance);
+
   const cashback = 2;
+
   return (
     <div className="w-full min-h-screen">
       <Welcome name="John Doe" weeklyCompleted={2} weeklyGoal={4} />
@@ -25,6 +101,22 @@ export default function Home() {
         exercitation qui enim. Magna minim sunt enim. Nulla ad ea deserunt
         laborum officia aliquip. Lorem id laborum aliquip consequat veniam
         officia. Enim voluptate id esse et veniam laborum sit dolore labore.
+      </div>
+      <div className="w-full h-full mt-8">
+        <h1>Pay your month subscription</h1>
+        <h2>ETH Balance</h2>
+        <code>
+          {`
+              Amount: ${ethBalance.data?.value}
+              Decimals: ${ethBalance?.data?.decimals}
+              Symbol: ${ethBalance?.data?.symbol}
+            `}
+        </code>
+        <p>Amount to pay: {gymUserFee} ETH</p>
+        <p>Max cashback value: {gymUserFee * gymUserMaxCashbackPercentage}</p>
+        <p>Max cashback (%): {gymUserMaxCashbackPercentage * 100}%</p>
+        <button onClick={handleUserMonthlyDeposit}>Deposit</button>
+        <button onClick={handleUserWithdraw}>Withdraw</button>
       </div>
     </div>
   );
