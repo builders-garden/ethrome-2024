@@ -109,7 +109,7 @@ const putHandler = async (req: NextRequest) => {
   if (lastTrainingSession.status != TrainingSessionStatus.ENTERED) {
     return NextResponse.json({
       status: "nok",
-      error: "This training session has not a valid status",
+      error: "This user has not a valid training session",
     });
   }
   try {
@@ -124,7 +124,6 @@ const putHandler = async (req: NextRequest) => {
     // check if it's a new month
     const now = new Date();
     await updateUser(userId, {
-      ...user,
       monthlyCashback:
         now.getMonth() != new Date(user.updatedAt).getMonth()
           ? cashback
