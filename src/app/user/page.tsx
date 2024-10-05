@@ -7,17 +7,20 @@ import {
   ISETHABI,
   SuperETHAddress,
 } from "@/lib/constants";
-import { parseEther } from "viem";
-import { useBalance, useWalletClient } from "wagmi";
+import { encodeFunctionData, parseEther } from "viem";
+import { useBalance, useReadContracts, useWalletClient } from "wagmi";
 import Welcome from "@/components/user/welcome";
 import CalendarStreak from "@/components/calendar-streak";
 import CustomBarChart from "@/components/charts/custom-bar-chart";
 import { Header } from "@/components/header";
+import usePimlico from "@/hooks/use-pimlico";
 
 export default function User() {
-  // const { smartAccountClient } = usePimlico();
+  const { smartAccountClient } = usePimlico();
   const { data: walletClient } = useWalletClient();
-  console.log("walletClient", walletClient);
+
+  console.log("smartAccount", smartAccountClient?.account?.address);
+  console.log("wallet", walletClient?.account.address);
 
   const ethBalance = useBalance({
     address: walletClient?.account.address,
@@ -38,22 +41,59 @@ export default function User() {
    * 2. transfer the rest using the SuperToken contract
    */
   async function handleUserMonthlyDeposit() {
-    const transactionHash = await walletClient?.sendTransaction({
-      to: gymSmartAccount,
-      value: parseEther(
-        (gymUserFee * (1 - gymUserMaxCashbackPercentage)).toString()
-      ),
+    const transactionHash = await smartAccountClient?.sendTransaction({
+      calls: [
+        {
+          to: gymSmartAccount,
+          value: parseEther(
+            (gymUserFee * (1 - gymUserMaxCashbackPercentage)).toString()
+          ),
+          data: "0x",
+        },
+        {
+          to: SuperETHAddress,
+          value: parseEther((gymUserFee * gymUserMaxCashbackPercentage).toString()),
+          data: encodeFunctionData({
+            abi: ISETHABI,
+            functionName: "upgradeByETHTo",
+            args: [gymSmartAccount]
+          }),
+        },
+      ],
+    })
+    console.log("tx", transactionHash)
+  }
+
+  const { data: balanceResult, isFetching: isFetchingBalance } =
+    useReadContracts({
+      allowFailure: false,
+      contracts: [
+        {
+          address: SuperETHAddress,
+          abi: ISETHABI,
+          functionName: "balanceOf",
+          args: [smartAccountClient?.account?.address],
+        },
+      ],
     });
-    console.log("tx1 - transactionHash", transactionHash);
-    const contractResult = await walletClient?.writeContract({
-      address: SuperETHAddress,
-      abi: ISETHABI,
-      // chain: sepolia,
-      functionName: "upgradeByETHTo",
-      args: [gymSmartAccount],
-      value: parseEther((gymUserFee * gymUserMaxCashbackPercentage).toString()),
-    });
-    console.log("tx2 - contractResult", contractResult);
+  if (!isFetchingBalance) {
+    console.log("FETCHED: balanceResult", balanceResult);
+  }
+
+  async function handleUserWithdraw() {
+    const txHash = await smartAccountClient?.sendTransaction({
+      calls: [
+        {
+          to: SuperETHAddress,
+          data: encodeFunctionData({
+            abi: ISETHABI,
+            functionName: "downgradeToETH",
+            args: [balanceResult?.[0]]
+          }),
+        }
+      ]
+    })
+    console.log("tx", txHash)
   }
 
   console.log("ethBalance", ethBalance);
@@ -97,6 +137,7 @@ export default function Home() {
         <p>Max cashback value: {gymUserFee * gymUserMaxCashbackPercentage}</p>
         <p>Max cashback (%): {gymUserMaxCashbackPercentage * 100}%</p>
         <button onClick={handleUserMonthlyDeposit}>Deposit</button>
+        <button onClick={handleUserWithdraw}>Withdraw</button>
       </div>
     </div>
   );

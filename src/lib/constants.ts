@@ -4639,6 +4639,6 @@ export const ISuperTokenABI = [
 ];
 
 // TODO: move this inside a DB or other resource
-export const gymSmartAccount = "0x6Eb8AfbB81aB92c86064dDC1D3DAB088e5216665";
+export const gymSmartAccount = "0x30E10aFbD63A8544a2F5DF7a25C0214541fCBc3c";
 export const gymUserFee = 0.01;
 export const gymUserMaxCashbackPercentage = 0.2;
