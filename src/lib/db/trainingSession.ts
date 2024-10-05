@@ -21,6 +21,17 @@ export async function getTrainingSessionById(
   });
 }
 
+export async function createTrainingSession(data: {
+  id: string;
+  status: string;
+  userId?: string;
+  gymId: string;
+}): Promise<TrainingSession> {
+  return await prisma.trainingSession.create({
+    data,
+  });
+}
+
 export async function updateTrainingSession(
   id: string,
   data: TrainingSession
