@@ -34,7 +34,6 @@ const IconButton = ({
 
 const AppBar = () => {
   const pathname = usePathname();
-  console.log(pathname);
 
   const icons = [
     {

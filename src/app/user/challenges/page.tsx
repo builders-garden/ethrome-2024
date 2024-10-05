@@ -1,22 +1,28 @@
-import Hero from "@/components/hero";
-import CalendarStreak from "@/components/calendar-streak";
-import CustomBarChart from "@/components/charts/custom-bar-chart";
+import ChallengeCard from "@/components/user/challenge-card";
+
+const challenges = [
+  {
+    name: "September Challenge",
+    author: "John Doe",
+    type: "monthly",
+    progress: 50,
+  },
+  {
+    name: "October Challenge",
+    author: "John Doe",
+    type: "monthly",
+    progress: 10,
+  },
+];
 
 export default function UserChallenges() {
   return (
-    <div className="flex-grow overflow-y-auto">
-      <div className="items-center max-w-sm lg:max-w-md bg-background rounded-xl p-2 mx-auto">
-        <Hero />
-        <CalendarStreak />
-        <CustomBarChart />
-        <div className="flex flex-col items-center justify-center">
-          Eu laboris sunt fugiat quis Lorem proident non officia voluptate sunt
-          id veniam consequat voluptate quis. Ea magna nulla duis id esse nisi
-          qui nostrud. Reprehenderit dolore aliqua nostrud ut sint esse fugiat
-          exercitation qui enim. Magna minim sunt enim. Nulla ad ea deserunt
-          laborum officia aliquip. Lorem id laborum aliquip consequat veniam
-          officia. Enim voluptate id esse et veniam laborum sit dolore labore.
-        </div>
+    <div className="w-full min-h-screen">
+      <h1 className="text-3xl font-bold px-4 py-4">Challenges 🏋🏽</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {challenges.map((challenge) => (
+          <ChallengeCard key={challenge.name} {...challenge} />
+        ))}
       </div>
     </div>
   );

@@ -21,12 +21,6 @@ const Welcome = ({ name, weeklyCompleted, weeklyGoal }: WelcomeProps) => {
           height={23}
         />
       </div>
-      <div className="flex items-center gap-2">
-        <h1 className="text-xl font-medium">Your cashback</h1>
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold">${weeklyCompleted * 0.15}</h1>
-        </div>
-      </div>
       <div className="flex gap-2 justify-between">
         <p className="text-sm font-bold">Your Weekly Goal</p>
         <div className="flex gap-2">
