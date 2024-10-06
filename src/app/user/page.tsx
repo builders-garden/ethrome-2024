@@ -19,22 +19,39 @@ import usePimlico from "@/hooks/use-pimlico";
 import Divider from "@/components/divider";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useModalStatus, usePrivy } from "@privy-io/react-auth";
+import { usePrivy } from "@privy-io/react-auth";
+import OnboardUser from "@/components/user/onboard-user";
 import FlowingBalance from "@/components/flowing-balance";
 import { Skeleton } from "@/components/ui/skeleton";
 import { activeStreamsQuery } from "@/lib/queries";
 import { useQuery } from "@apollo/client";
 
 export default function User() {
+  const { ready, authenticated, user, login, isModalOpen } = usePrivy();
+
+  const privyId = user?.id;
+  const name = user?.google?.name || user?.farcaster?.displayName || "";
+  const email = user?.email?.address || user?.google?.email || "";
+  const address = user?.wallet?.address || "";
+  useEffect(() => {
+    if (ready && !authenticated && !isModalOpen) {
+      login();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, authenticated, isModalOpen]);
   const { smartAccountClient } = usePimlico();
   const { data: walletClient } = useWalletClient();
 
   console.log("smartAccount", smartAccountClient?.account?.address);
   console.log("wallet", walletClient?.account.address);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [subscriptionActive, setSubscriptionActive] = useState(true);
+
   const ethBalance = useBalance({
     address: walletClient?.account.address,
   });
+  console.log("ethBalance", ethBalance);
 
   const [firstBalance, setFirstBalance] = useState<bigint | undefined>();
 
@@ -145,17 +162,6 @@ export default function User() {
     console.log("tx", txHash);
   }
 
-  const [subscriptionActive, setSubscriptionActive] = useState(true);
-
-  const { ready, authenticated, login } = usePrivy();
-  const { isOpen } = useModalStatus();
-
-  useEffect(() => {
-    if (ready && !authenticated && !isOpen) {
-      login();
-    }
-  }, [ready, authenticated, isOpen]);
-
   const [startingDate, setStartingDate] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -169,22 +175,31 @@ export default function User() {
     smartAccountClient?.account?.address,
   );
 
-  const {
-    loading: loadingQueryRes,
-    error: errorQueryRes,
-    data: dataQueryRes,
-  } = useQuery(activeStreamsQuery, {
-    variables: {
-      receiver: smartAccountClient?.account?.address.toLocaleLowerCase(),
+  const { loading: loadingQueryRes, data: dataQueryRes } = useQuery(
+    activeStreamsQuery,
+    {
+      variables: {
+        receiver: smartAccountClient?.account?.address.toLocaleLowerCase(),
+      },
+      fetchPolicy: "network-only",
     },
-    fetchPolicy: "network-only",
-  });
+  );
 
   const streamIsActive = dataQueryRes?.streams.length > 0;
 
   return (
     <div className="w-full min-h-screen flex flex-col gap-4">
       <Welcome name="John" weeklyCompleted={2} weeklyGoal={4} />
+      {user && privyId ? (
+        <OnboardUser
+          ready={ready}
+          authenticated={authenticated}
+          name={name}
+          email={email}
+          address={address}
+          privyId={privyId}
+        />
+      ) : null}
 
       <Divider />
 
