@@ -12,12 +12,12 @@ import {
 } from "@/components/ui/chart";
 
 const chartData = [
-  { month: "January", workout: 12, },
-  { month: "February", workout: 23, },
-  { month: "March", workout: 14, },
-  { month: "April", workout: 8, },
-  { month: "May", workout: 16, },
-  { month: "June", workout: 19, },
+  { month: "January", workout: 12 },
+  { month: "February", workout: 23 },
+  { month: "March", workout: 14 },
+  { month: "April", workout: 8 },
+  { month: "May", workout: 16 },
+  { month: "June", workout: 19 },
 ];
 
 const chartConfig = {
@@ -29,13 +29,13 @@ const chartConfig = {
 
 function CustomBarChart() {
   return (
-    <div className="flex flex-col items-center justify-center px-4">
+    <div className="flex flex-col items-start px-4 gap-4">
+      <h1 className="text-xl font-medium">Year Recap</h1>
       <ChartContainer
         config={chartConfig}
         className="min-h-[200px] w-full max-w-md"
       >
         <BarChart accessibilityLayer data={chartData}>
-          <CartesianGrid vertical={false} />
           <XAxis
             dataKey="month"
             tickLine={false}

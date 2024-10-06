@@ -29,14 +29,14 @@ const CalendarStreak = () => {
       setStreak((prevStreak) => [...prevStreak, day]);
     } else {
       setStreak((prevStreak) =>
-        prevStreak.filter((d) => d.getTime() !== day.getTime())
+        prevStreak.filter((d) => d.getTime() !== day.getTime()),
       );
     }
   };
 
   return (
     <div className="flex flex-col w-full px-4 rounded-xl gap-4">
-      <h1 className="text-2xl font-bold">Your Workouts</h1>
+      <h1 className="text-xl font-medium">Month Recap</h1>
       <Calendar
         mode="multiple"
         onDayClick={handleDayClick}

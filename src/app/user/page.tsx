@@ -280,7 +280,12 @@ export default function User() {
 
       <div className="rounded-xl p-4 py-0 flex justify-start items-center">
         <div className="flex flex-col items-start gap-1 w-full">
-          <span className="text-xl font-medium">Your cashback</span>
+          <div className="flex items-center">
+            <span className="text-xl font-medium">Your cashback</span>
+            {!loadingQueryRes && streamIsActive && (
+              <span className="flex bg-green-500 rounded-full w-2 h-2 ml-2 animate-pulse" />
+            )}
+          </div>
           {!loadingQueryRes && startingDate && firstBalance !== undefined ? (
             streamIsActive ? (
               <div
@@ -356,6 +361,8 @@ export default function User() {
       <Divider />
 
       <CalendarStreak />
+
+      <Divider />
 
       <CustomBarChart />
 

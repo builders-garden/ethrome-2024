@@ -94,7 +94,7 @@ function OnboardUser({
 
   return (
     <Sheet>
-      <SheetTrigger ref={sheetTriggerRef} />
+      <SheetTrigger ref={sheetTriggerRef} className="hidden" />
       <SheetContent side="bottom">
         <SheetHeader>
           <SheetTitle>Register</SheetTitle>

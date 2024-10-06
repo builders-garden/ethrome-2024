@@ -26,6 +26,9 @@ export async function getUsersLeaderboard(top?: number): Promise<User[]> {
 export async function getUserById(id: string): Promise<User | null> {
   return await prisma.user.findUnique({
     where: { id },
+    include: {
+      Gym: true,
+    },
   });
 }
 
@@ -43,7 +46,7 @@ export async function createUser(data: User): Promise<User | null> {
 
 export async function updateUser(
   id: string,
-  data: PartialUser
+  data: PartialUser,
 ): Promise<User | null> {
   return await prisma.user.update({
     where: { id },
@@ -60,7 +63,7 @@ export async function deleteUser(id: string): Promise<User | null> {
 // Add a new function to update user with partial data
 export async function updateUserPartial(
   id: string,
-  data: PartialUser
+  data: PartialUser,
 ): Promise<User | null> {
   return await prisma.user.update({
     where: { id },
