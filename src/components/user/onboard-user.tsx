@@ -105,7 +105,7 @@ function OnboardUser({
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Name
+              Name *
             </Label>
             <Input
               id="name"
@@ -116,7 +116,7 @@ function OnboardUser({
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Email
+              Email *
             </Label>
             <Input
               id="email"
@@ -128,7 +128,7 @@ function OnboardUser({
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="name" className="text-right">
-              Gym
+              Gym *
             </Label>
             <Select onValueChange={(value) => setGymId(value)}>
               <SelectTrigger className="w-[180px]">
@@ -150,8 +150,12 @@ function OnboardUser({
         </div>
         <SheetFooter>
           <SheetClose asChild>
-            <Button type="submit" onClick={handleSubmit}>
-              Pay subscription
+            <Button
+              type="submit"
+              onClick={handleSubmit}
+              disabled={!newName || !newEmail || !gymId}
+            >
+              Register
             </Button>
           </SheetClose>
         </SheetFooter>
