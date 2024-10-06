@@ -172,6 +172,7 @@ export default function User() {
     },
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function handleUserMonthlyDeposit() {
     const transactionHash =
       usdcUserBalance < parseEther(gymUserFee.toString())

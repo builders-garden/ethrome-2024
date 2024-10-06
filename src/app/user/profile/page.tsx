@@ -71,25 +71,24 @@ export default function UserProfile() {
     }
   }, [user?.id]);
 
-  const { data: fullbalanceResult, isFetching: isFetchingBalance } =
-    useReadContracts({
-      contracts: [
-        {
-          address: SuperUSDCAddress,
-          abi: ISuperTokenABI,
-          functionName: "balanceOf",
-          args: [smartAccountClient?.account?.address],
-        },
-        {
-          address: USDCAddress,
-          abi: fUSDCABI,
-          functionName: "balanceOf",
-          args: [smartAccountClient?.account?.address],
-        },
-      ],
-    });
+  const { data: fullbalanceResult } = useReadContracts({
+    contracts: [
+      {
+        address: SuperUSDCAddress,
+        abi: ISuperTokenABI,
+        functionName: "balanceOf",
+        args: [smartAccountClient?.account?.address],
+      },
+      {
+        address: USDCAddress,
+        abi: fUSDCABI,
+        functionName: "balanceOf",
+        args: [smartAccountClient?.account?.address],
+      },
+    ],
+  });
 
-  const superUsdcUserBalance = fullbalanceResult?.[0].result as bigint;
+  // const superUsdcUserBalance = fullbalanceResult?.[0].result as bigint;
   const usdcUserBalance = fullbalanceResult?.[1].result as bigint;
 
   const directFeeToGym = parseEther(
