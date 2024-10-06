@@ -17,7 +17,7 @@ import { useQuery } from "@tanstack/react-query";
 
 const getUsersByGymId = async (gymId: string): Promise<User[]> => {
   const data = await fetch(`/api/users?gymId=${gymId}`).then((res) =>
-    res.json()
+    res.json(),
   );
   if (data.status === "nok") {
     return [];
@@ -32,7 +32,7 @@ const GymUsers = ({ id }: { id: string }) => {
     enabled: !!id,
   });
   return (
-    <div className="flex flex-col gap-2 my-10 min-h-[50vh]">
+    <div className="flex flex-col gap-2 my-10 sm:min-h-[50vh]">
       <Table>
         <TableCaption>A list of the users in your Gyat</TableCaption>
         <TableHeader>
@@ -45,7 +45,7 @@ const GymUsers = ({ id }: { id: string }) => {
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="min-h-[50vh]">
+        <TableBody className="sm:min-h-[50vh]">
           {users?.map((user) => (
             <TableRow key={user.id}>
               <TableCell className="font-medium">

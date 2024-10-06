@@ -7,7 +7,7 @@ import RegisterGym from "@/components/dashboard/register-gym";
 import OnboardOwner from "@/components/dashboard/onboard-owner";
 import GymTable from "@/components/dashboard/gym-table";
 
-import { Header } from "@/components/header";
+import Header from "@/components/header";
 import { useState } from "react";
 import { Gym } from "@prisma/client";
 import GymUsers from "@/components/dashboard/gym-users";
@@ -39,7 +39,7 @@ export default function Dashboard() {
           privyId={privyId}
         />
       ) : null}
-      <div className="flex flex-row w-full justify-between container">
+      <div className="flex flex-col sm:flex-row w-full justify-between container px-4">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="flex flex-row gap-2 items-center">
           <p>Register here your gyms</p>
@@ -64,7 +64,7 @@ export default function Dashboard() {
           </Button>
         </Link>
       </div> */}
-      <div className="grid grid-cols-2 gap-4 py-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-10 px-4">
         <div className="flex flex-col items-center">
           <h1 className="text-2xl font-bold">Your Gyms</h1>
           {user && privyId ? (

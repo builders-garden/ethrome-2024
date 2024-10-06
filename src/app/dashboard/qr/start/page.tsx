@@ -1,7 +1,7 @@
 "use client";
 
 import { v4 as uuidv4 } from "uuid";
-import { Header } from "@/components/header";
+import Header from "@/components/header";
 import QRCode from "react-qr-code";
 import { useEffect, useState } from "react";
 
@@ -25,9 +25,11 @@ export default function DashboardQR() {
   return (
     <div className="flex min-h-screen flex-col bg-background items-center">
       <Header />
-      <h1 className="text-3xl font-bold">Dashboard QR</h1>
-      <div className="flex flex-col items-center">
-        <p>training {dynamicUUID}</p>
+      <h1 className="text-3xl font-bold">Welcome! 🤗</h1>
+      <h3 className="text-lg">
+        Scan the QR code to start your training session
+      </h3>
+      <div className="flex flex-col items-center justify-center min-h-[50vh]">
         {dynamicUUID && <QRCode value={link} />}
       </div>
     </div>

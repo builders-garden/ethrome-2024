@@ -3,7 +3,7 @@
 // import Fluid from "@/components/fluid";
 // import CalendarStreak from "@/components/calendar-streak";
 // import CustomBarChart from "@/components/charts/custom-bar-chart";
-import { Header } from "@/components/header";
+import Header from "@/components/header";
 import SponsorsDesktop from "@/components/sponsors-desktop";
 import SponsorsMobile from "@/components/sponsors-mobile";
 import { streamsDetailsQuery } from "@/lib/queries";

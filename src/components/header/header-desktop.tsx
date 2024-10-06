@@ -5,7 +5,7 @@ import { Button } from "../ui/button";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 
-const Header = () => {
+const HeaderDesktop = () => {
   const { authenticated, user, login, logout } = usePrivy();
   return (
     <header className="container flex items-center justify-between gap-10 py-4">
@@ -26,6 +26,12 @@ const Header = () => {
           className="flex cursor-pointer items-center text-lg font-medium text-muted-foreground transition-colors hover:text-foreground sm:text-sm"
         >
           Dashboard
+        </Link>
+        <Link
+          href="/dashboard/qr"
+          className="flex cursor-pointer items-center text-lg font-medium text-muted-foreground transition-colors hover:text-foreground sm:text-sm"
+        >
+          QR Codes
         </Link>
         <Link
           href="/user"
@@ -63,4 +69,4 @@ const Header = () => {
   );
 };
 
-export { Header };
+export { HeaderDesktop };

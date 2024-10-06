@@ -17,7 +17,7 @@ import { Pencil, X } from "lucide-react";
 
 const getGymsByOwnerId = async (ownerId: string): Promise<Gym[]> => {
   const data = await fetch(`/api/gym?ownerId=${ownerId}`).then((res) =>
-    res.json()
+    res.json(),
   );
   if (data.status === "nok") {
     return [];
@@ -51,7 +51,7 @@ const GymTable = ({
   }, [isSuccess]);
 
   return (
-    <div className="flex flex-col gap-2 my-10 min-h-[50vh]">
+    <div className="flex flex-col gap-2 my-10 sm:min-h-[50vh]">
       <Table>
         <TableCaption>A list of your gyms</TableCaption>
         <TableHeader>
@@ -62,7 +62,7 @@ const GymTable = ({
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody className="min-h-[50vh]">
+        <TableBody className="sm:min-h-[50vh]">
           {gyms?.map((gym) => (
             <TableRow key={gym.id}>
               <TableCell className="font-medium">{gym.name}</TableCell>
