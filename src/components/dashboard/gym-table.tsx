@@ -51,7 +51,7 @@ const GymTable = ({
   }, [isSuccess]);
 
   return (
-    <div className="flex flex-col gap-2 my-10">
+    <div className="flex flex-col gap-2 my-10 min-h-[50vh]">
       <Table>
         <TableCaption>A list of your gyms</TableCaption>
         <TableHeader>
@@ -62,7 +62,7 @@ const GymTable = ({
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="min-h-[50vh]">
           {gyms?.map((gym) => (
             <TableRow key={gym.id}>
               <TableCell className="font-medium">{gym.name}</TableCell>

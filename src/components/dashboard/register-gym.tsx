@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Plus } from "lucide-react";
 
 function RegisterGym({
   address,
@@ -62,7 +63,9 @@ function RegisterGym({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Register Gym</Button>
+        <Button variant="default" className="flex flex-row gap-2 items-center">
+          <Plus size={16} /> Register Gym
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

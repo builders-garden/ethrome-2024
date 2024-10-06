@@ -32,9 +32,9 @@ const GymUsers = ({ id }: { id: string }) => {
     enabled: !!id,
   });
   return (
-    <div className="flex flex-col gap-2 my-10">
+    <div className="flex flex-col gap-2 my-10 min-h-[50vh]">
       <Table>
-        <TableCaption>A list of the users in your GYM</TableCaption>
+        <TableCaption>A list of the users in your Gyat</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>User</TableHead>
@@ -45,7 +45,7 @@ const GymUsers = ({ id }: { id: string }) => {
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody>
+        <TableBody className="min-h-[50vh]">
           {users?.map((user) => (
             <TableRow key={user.id}>
               <TableCell className="font-medium">

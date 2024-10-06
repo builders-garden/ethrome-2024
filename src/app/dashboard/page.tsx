@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-
 import { usePrivy } from "@privy-io/react-auth";
 import usePimlico from "@/hooks/use-pimlico";
 
@@ -10,7 +8,6 @@ import OnboardOwner from "@/components/dashboard/onboard-owner";
 import GymTable from "@/components/dashboard/gym-table";
 
 import { Header } from "@/components/header";
-import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Gym } from "@prisma/client";
 import GymUsers from "@/components/dashboard/gym-users";
@@ -41,8 +38,20 @@ export default function Dashboard() {
           privyId={privyId}
         />
       ) : null}
-      <h1 className="text-3xl font-bold">Dashboard</h1>
-      <div className="w-full max-w-lg flex flex-row items-center justify-around">
+      <div className="flex flex-row w-full justify-between container">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <div className="flex flex-row gap-2 items-center">
+          <p>Register here your gyms</p>
+          {user && privyId && address ? (
+            <RegisterGym
+              ownerId={privyId}
+              address={address}
+              setRefetchGym={setRefetchGym}
+            />
+          ) : null}
+        </div>
+      </div>
+      {/* <div className="w-full max-w-lg flex flex-row items-center justify-around">
         <Link href="/dashboard/qr/start">
           <Button className="py-2 bg-blue-500 hover:bg-blue-700">
             Show &quot;Start Training&quot; QR Code
@@ -53,37 +62,31 @@ export default function Dashboard() {
             Show &quot;End Training&quot; QR Code
           </Button>
         </Link>
-      </div>
-      <div className="flex flex-col items-center">
-        <p>Register here your gyms</p>
-        {user && privyId && address ? (
-          <RegisterGym
-            ownerId={privyId}
-            address={address}
-            setRefetchGym={setRefetchGym}
-          />
-        ) : null}
-      </div>
-      <div className="flex flex-col items-center">
-        {user && privyId ? (
-          <GymTable
-            ownerId={privyId}
-            refetchGym={refetchGym}
-            setRefetchGym={setRefetchGym}
-            setGyms={setGyms}
-          />
-        ) : null}
-      </div>
-      <div className="flex flex-col items-center">
-        <select onChange={(e) => setSelectedGymId(e.target.value)}>
-          <option value="">Select a gym</option>
-          {gyms.map((gym) => (
-            <option key={gym.id} value={gym.id}>
-              {gym.name}
-            </option>
-          ))}
-        </select>
-        <GymUsers id={selectedGymId || ""} />
+      </div> */}
+      <div className="grid grid-cols-2 gap-4 py-10">
+        <div className="flex flex-col items-center">
+          <h1 className="text-2xl font-bold">Your Gyms</h1>
+          {user && privyId ? (
+            <GymTable
+              ownerId={privyId}
+              refetchGym={refetchGym}
+              setRefetchGym={setRefetchGym}
+              setGyms={setGyms}
+            />
+          ) : null}
+        </div>
+        <div className="flex flex-col items-center">
+          <h1 className="text-2xl font-bold">Your Gym Users</h1>
+          <select onChange={(e) => setSelectedGymId(e.target.value)}>
+            <option value="">Select a gym</option>
+            {gyms.map((gym) => (
+              <option key={gym.id} value={gym.id}>
+                {gym.name}
+              </option>
+            ))}
+          </select>
+          <GymUsers id={selectedGymId || ""} />
+        </div>
       </div>
     </div>
   );
