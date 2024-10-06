@@ -70,6 +70,7 @@ export default function User() {
       setStoredUser(data.data);
     }
     fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // calculate if the subscription is active using user.createdAt

@@ -58,6 +58,7 @@ export default function UserQr() {
     }
   }, [ready, authenticated, router]);
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function handleDeleteFlow() {
     if (!smartAccount) {
       throw new Error("Smart account address not available");
@@ -110,11 +111,14 @@ export default function UserQr() {
   }, [user]);
 
   return (
-    <div className="w-full min-h-screen">
-      <h1 className="text-2xl font-bold">Training Session Ended</h1>
-      <Link href="/user">
-        <Button>Back</Button>
-      </Link>
+    <div className="flex min-h-screen flex-col bg-background items-center">
+      <h1 className="text-3xl font-bold">Training Session Ended! 👋</h1>
+      <h3 className="text-lg">Scan the QR code to end your training session</h3>
+      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <Link href="/user">
+          <Button>Back</Button>
+        </Link>
+      </div>
     </div>
   );
 }

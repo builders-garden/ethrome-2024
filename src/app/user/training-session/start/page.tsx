@@ -27,7 +27,17 @@ export default function UserQr() {
   );
   const [account, setAccount] = useState<`0x${string}` | undefined>(undefined);
   const [gym, setGym] = useState<Gym | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [createFlowResult, setCreateFlowResult] = useState<
+    `0x${string}` | undefined
+  >();
   console.log("GYM", gym);
+
+  useEffect(() => {
+    if (ready && !authenticated) {
+      router.push("/user");
+    }
+  }, [ready, authenticated, router]);
 
   useEffect(() => {
     async function fetchGym() {
@@ -53,10 +63,6 @@ export default function UserQr() {
     }
     getSmartAccount();
   }, [authenticated, predictSmartAccountAddress]);
-
-  const [createFlowResult, setCreateFlowResult] = useState<
-    `0x${string}` | undefined
-  >();
 
   async function handleCreateFlow() {
     if (!smartAccount) {
@@ -90,12 +96,6 @@ export default function UserQr() {
   }
 
   useEffect(() => {
-    if (ready && !authenticated) {
-      router.push("/user");
-    }
-  }, [ready, authenticated, router]);
-
-  useEffect(() => {
     const startTrainingSession = async () => {
       if (!user || !user.id) return;
 
@@ -127,15 +127,18 @@ export default function UserQr() {
       });
       handleCreateFlow();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [smartAccount]);
 
   return (
-    <div className="w-full min-h-screen">
-      <h1 className="text-2xl font-bold">Training Session Started</h1>
-      <Link href="/user">
-        {createFlowResult ?? "waiting create flow result"}
-        <Button>Back</Button>
-      </Link>
+    <div className="flex min-h-screen flex-col bg-background items-center">
+      <h1 className="text-3xl font-bold">Training Session Ended! 👋</h1>
+      <h3 className="text-lg">Scan the QR code to end your training session</h3>
+      <div className="flex flex-col items-center justify-center min-h-[50vh]">
+        <Link href="/user">
+          <Button>Back</Button>
+        </Link>
+      </div>
     </div>
   );
 }

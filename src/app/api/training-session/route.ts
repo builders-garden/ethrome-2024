@@ -5,14 +5,10 @@ import {
   getUserById,
   updateTrainingSession,
   updateUser,
+  TrainingSessionStatus,
 } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
-
-export enum TrainingSessionStatus {
-  ENTERED = "ENTERED",
-  LEFT = "LEFT",
-}
 
 const postHandler = async (req: NextRequest) => {
   const { userId } = await req.json();
@@ -22,7 +18,7 @@ const postHandler = async (req: NextRequest) => {
         status: "nok",
         error: "Missing userId!",
       },
-      { status: 400, statusText: "Bad Request" }
+      { status: 400, statusText: "Bad Request" },
     );
   }
   const user = await getUserById(userId);
@@ -32,7 +28,7 @@ const postHandler = async (req: NextRequest) => {
         status: "nok",
         error: "User not found",
       },
-      { status: 404, statusText: "Not Found" }
+      { status: 404, statusText: "Not Found" },
     );
   }
   try {
@@ -47,7 +43,7 @@ const postHandler = async (req: NextRequest) => {
       {
         status: 201,
         statusText: "Created",
-      }
+      },
     );
   } catch (error) {
     console.error("Error while adding new training session", error);
@@ -56,7 +52,7 @@ const postHandler = async (req: NextRequest) => {
         status: "nok",
         error: "Error while adding new training session",
       },
-      { status: 500, statusText: "Internal Server Error" }
+      { status: 500, statusText: "Internal Server Error" },
     );
   }
 };
@@ -68,7 +64,7 @@ const getHandler = async (req: NextRequest) => {
   if (!id) {
     return NextResponse.json(
       { status: "nok", error: "Missing required query parameter: id" },
-      { status: 400, statusText: "Bad Request" }
+      { status: 400, statusText: "Bad Request" },
     );
   }
 
@@ -85,7 +81,7 @@ const putHandler = async (req: NextRequest) => {
         status: "nok",
         error: "Missing userId!",
       },
-      { status: 400, statusText: "Bad Request" }
+      { status: 400, statusText: "Bad Request" },
     );
   }
   const user = await getUserById(userId);
@@ -95,7 +91,7 @@ const putHandler = async (req: NextRequest) => {
         status: "nok",
         error: "User not found",
       },
-      { status: 404, statusText: "Not Found" }
+      { status: 404, statusText: "Not Found" },
     );
   }
   const existingTrainingSessions = await getTrainingSessionsByUserId(userId);
@@ -135,7 +131,7 @@ const putHandler = async (req: NextRequest) => {
       {
         status: 200,
         statusText: "Updated",
-      }
+      },
     );
   } catch (error) {
     console.error("Error while adding new training session", error);
@@ -144,7 +140,7 @@ const putHandler = async (req: NextRequest) => {
         status: "nok",
         error: "Error while adding new training session",
       },
-      { status: 500, statusText: "Internal Server Error" }
+      { status: 500, statusText: "Internal Server Error" },
     );
   }
 };

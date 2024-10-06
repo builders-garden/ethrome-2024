@@ -5,14 +5,11 @@ import {
   CFAv1ForwarderABI,
   CFAv1ForwarderAddress,
   flowRate,
-  gymUserFee,
-  gymUserMaxCashbackPercentage,
   ISuperTokenABI,
   SuperUSDCAddress,
 } from "@/lib/constants";
 import { usePrivy } from "@privy-io/react-auth";
 import { useEffect, useState } from "react";
-import { parseEther } from "viem";
 import { sepolia } from "viem/chains";
 import { useBalance, useReadContracts, useWalletClient } from "wagmi";
 
@@ -20,7 +17,7 @@ const Fluid = () => {
   const { predictSmartAccountAddress } = usePimlico();
   const { authenticated, user } = usePrivy();
   const [smartAccount, setSmartAccount] = useState<`0x${string}` | undefined>(
-    undefined
+    undefined,
   );
   const [account, setAccount] = useState<`0x${string}` | undefined>(undefined);
   const { data: walletClient } = useWalletClient();
@@ -127,7 +124,6 @@ const Fluid = () => {
         ],
       });
       console.log("result", result);
-
     } catch (error) {
       console.error(error);
     }

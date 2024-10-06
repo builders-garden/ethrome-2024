@@ -6,6 +6,11 @@ type PartialUser = {
   [K in keyof User]?: User[K];
 };
 
+export enum TrainingSessionStatus {
+  ENTERED = "ENTERED",
+  LEFT = "LEFT",
+}
+
 export async function getUsersByGymId(gymId: string): Promise<User[]> {
   return await prisma.user.findMany({
     where: {
