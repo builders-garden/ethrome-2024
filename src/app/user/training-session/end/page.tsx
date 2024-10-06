@@ -3,21 +3,22 @@
 import { Button } from "@/components/ui/button";
 import { usePrivy } from "@privy-io/react-auth";
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function UserQr() {
-  const { user } = usePrivy();
-  const initialized = useRef(false);
+  const router = useRouter();
+  const { ready, authenticated, user } = usePrivy();
 
   useEffect(() => {
-    if (!initialized.current) {
-      initialized.current = true;
+    if (ready && !authenticated) {
+      router.push("/user");
     }
-  }, []);
+  }, [ready, authenticated, router]);
 
   useEffect(() => {
-    const startTrainingSession = async () => {
+    const endTrainingSession = async () => {
       if (!user || !user.id) return;
 
       const data = await fetch(`/api/training-session/`, {
@@ -27,7 +28,7 @@ export default function UserQr() {
         }),
       }).then((res) => res.json());
 
-      console.log("DIOMERDA 2", data);
+      console.log("END TRAINING SESSION", data);
       if (data.status !== "ok") {
         console.error("Training session not found", data);
         toast.error("Training session not found");
@@ -36,14 +37,12 @@ export default function UserQr() {
         toast.success("Training session started");
       }
     };
-    if (initialized.current) {
-      startTrainingSession();
-    }
+    endTrainingSession();
   }, [user]);
 
   return (
     <div className="w-full min-h-screen">
-      <h1 className="text-2xl font-bold">Training Session End</h1>
+      <h1 className="text-2xl font-bold">Training Session Ended</h1>
       <Link href="/user">
         <Button>Back</Button>
       </Link>

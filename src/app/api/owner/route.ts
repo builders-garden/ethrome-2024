@@ -13,7 +13,15 @@ export async function GET(request: Request) {
       );
     }
     const owner = await getOwnerById(id);
-    return NextResponse.json({ data: owner, status: "ok" }, { status: 200 });
+
+    if (owner) {
+      return NextResponse.json({ data: owner, status: "ok" }, { status: 200 });
+    } else {
+      return NextResponse.json(
+        { status: "nok", error: "Owner not found" },
+        { status: 404 }
+      );
+    }
   } catch (error) {
     console.error("Error getting owner:", error);
     return NextResponse.json(
