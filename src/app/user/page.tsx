@@ -90,8 +90,6 @@ export default function User() {
   ];
 
   async function handleUserMonthlyDeposit() {
-    console.log("usdcUserBalance", usdcUserBalance, "gymUserFee", gymUserFee)
-    console.log("minting", parseEther(gymUserFee.toString()))
     const transactionHash = usdcUserBalance < parseEther(gymUserFee.toString()) ?
       await smartAccountClient?.sendTransaction({
         calls: [
