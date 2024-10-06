@@ -63,33 +63,38 @@ const LeaderboardTable = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {
-          users.length > 0 ?
-          users.map((user, index) => (
-            <TableRow key={user.id}>
-              <TableCell className="font-medium">
-                {index < 3 ? (
-                  <Trophy
-                    className={`w-4 h-4 ${
-                      index === 0
-                        ? "text-yellow-500"
-                        : index === 1
-                        ? "text-gray-500"
-                        : index === 2
-                        ? "text-orange-500"
-                        : "text-gray-500"
-                    }`}
-                  />
-                ) : (
-                  <span>{index + 1}</span>
-                )}
+          {users.length > 0 ? (
+            users.map((user, index) => (
+              <TableRow key={user.id}>
+                <TableCell className="font-medium">
+                  {index < 3 ? (
+                    <Trophy
+                      className={`w-4 h-4 ${
+                        index === 0
+                          ? "text-yellow-500"
+                          : index === 1
+                            ? "text-gray-500"
+                            : index === 2
+                              ? "text-orange-500"
+                              : "text-gray-500"
+                      }`}
+                    />
+                  ) : (
+                    <span>{index + 1}</span>
+                  )}
+                </TableCell>
+                <TableCell>{user.totalCashback}</TableCell>
+                <TableCell>{user.name}</TableCell>
+                {/* <TableCell>{user.rank}</TableCell> */}
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={3}>
+                Loading this amazing leaderboard...
               </TableCell>
-              <TableCell>{user.totalCashback}</TableCell>
-              <TableCell>{user.name}</TableCell>
-              {/* <TableCell>{user.rank}</TableCell> */}
             </TableRow>
-          )) : <TableRow><TableCell colSpan={3}>No users found</TableCell></TableRow>
-          }
+          )}
         </TableBody>
       </Table>
     </div>

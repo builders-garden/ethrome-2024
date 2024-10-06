@@ -1,8 +1,9 @@
-"use client"
+"use client";
 import { User } from "@prisma/client";
 import { usePrivy } from "@privy-io/react-auth";
 import { Shield, ShieldAlert } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 const LeaderboardHero = () => {
   const { user } = usePrivy();
@@ -22,7 +23,7 @@ const LeaderboardHero = () => {
   // search for user in allUsers to get the rank
   const userRank = (userId: string) => {
     return allUsers.findIndex((u) => u.id === userId) + 1;
-  }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -46,7 +47,13 @@ const LeaderboardHero = () => {
       <div className="flex gap-4 mt-4">
         <div className="bg-green-100 p-4 rounded-lg text-center">
           <p className="text-sm text-green-600 font-semibold">Your Position</p>
-          <p className="text-3xl font-bold text-green-700">{user?.id ? userRank(user?.id) : "#"} th</p>
+          {user?.id ? (
+            <p className="text-3xl font-bold text-green-700">
+              {`${userRank(user?.id)} th`}
+            </p>
+          ) : (
+            <Skeleton className="h-[32px] w-[5rem] rounded-full my-2" />
+          )}
           <p className="text-xs text-green-500">Keep going!</p>
         </div>
 
