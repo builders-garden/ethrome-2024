@@ -18,7 +18,7 @@ const Header = () => {
           className="overflow-hidden rounded-full"
           style={{ aspectRatio: "36/36", objectFit: "cover" }}
         /> */}
-        <span className="font-heading text-xl font-bold">Naaamofit</span>
+        <span className="font-heading text-xl font-bold">NaaamoFit</span>
       </Link>
       <nav className="flex flex-1 items-center justify-center gap-10">
         <Link
@@ -40,7 +40,7 @@ const Header = () => {
             <span className="text-sm text-muted-foreground">
               {`${user.wallet?.address?.slice(
                 0,
-                6
+                6,
               )}...${user.wallet?.address?.slice(-4)}`}
             </span>
             <Button variant="default" onClick={logout} className="p-2">

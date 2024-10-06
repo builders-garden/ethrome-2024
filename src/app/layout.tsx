@@ -15,8 +15,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "NAAMO",
-  description: "NAAMO description",
+  title: "NaaamoFit",
+  description: "Workout to earn",
 };
 
 export default function RootLayout({

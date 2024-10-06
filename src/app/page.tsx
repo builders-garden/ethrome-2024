@@ -4,50 +4,11 @@
 // import CalendarStreak from "@/components/calendar-streak";
 // import CustomBarChart from "@/components/charts/custom-bar-chart";
 import { Header } from "@/components/header";
-
-import { gql, useQuery } from "@apollo/client";
-
-const streamsQuery = gql`
-  query MyQuery($receiver: String!) {
-    streams(
-      where: { receiver: $receiver }
-      orderBy: createdAtTimestamp
-      orderDirection: desc
-    ) {
-      createdAtBlockNumber
-      createdAtTimestamp
-      currentFlowRate
-      deposit
-      id
-      streamedUntilUpdatedAt
-      updatedAtBlockNumber
-      updatedAtTimestamp
-      userData
-      token {
-        decimals
-        isListed
-        name
-        symbol
-        isSuperToken
-      }
-      receiver {
-        id
-        isSuperApp
-        createdAtTimestamp
-        createdAtBlockNumber
-      }
-      sender {
-        createdAtTimestamp
-        createdAtBlockNumber
-        id
-        isSuperApp
-      }
-    }
-  }
-`;
+import { streamsDetailsQuery } from "@/lib/queries";
+import { useQuery } from "@apollo/client";
 
 export default function Home() {
-  const { loading, error, data } = useQuery(streamsQuery, {
+  const { loading, error, data } = useQuery(streamsDetailsQuery, {
     variables: { receiver: "0xaf491be3402245400a537f84c09513cd9c371a50" },
     fetchPolicy: "network-only",
   });

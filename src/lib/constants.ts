@@ -1,3 +1,5 @@
+import { parseEther } from "viem";
+
 export const adminWallets = [
   "0x0000000000000000000000000000000000000000",
   "0x0000000000000000000000000000000000000000",
@@ -15,6 +17,7 @@ export const SuperUSDCAddress = "0xb598E6C621618a9f63788816ffb50Ee2862D443B" as 
 export const gymSmartAccount = "0x30E10aFbD63A8544a2F5DF7a25C0214541fCBc3c" as `0x${string}`;
 export const gymUserFee = 50; // 50 USDC per month
 export const gymUserMaxCashbackPercentage = 0.2;
+export const flowRate = parseEther((gymUserFee * gymUserMaxCashbackPercentage / (365/12 * 24 * 60 * 60)).toFixed(18));
 
 export const CFAv1ForwarderABI = [
   {

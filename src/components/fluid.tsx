@@ -4,6 +4,7 @@ import usePimlico from "@/hooks/use-pimlico";
 import {
   CFAv1ForwarderABI,
   CFAv1ForwarderAddress,
+  flowRate,
   gymUserFee,
   gymUserMaxCashbackPercentage,
   ISuperTokenABI,
@@ -72,10 +73,6 @@ const Fluid = () => {
   const ethBalance = useBalance({
     address: smartAccount,
   });
-
-  const flowRate = parseEther((gymUserFee * gymUserMaxCashbackPercentage / (365/12 * 24 * 60 * 60)).toFixed(18));
-
-  console.log("flowRate", flowRate)
 
   async function handleCreateFlow() {
     if (!smartAccount) {

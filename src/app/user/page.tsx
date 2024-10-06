@@ -8,8 +8,9 @@ import {
   SuperUSDCAddress,
   USDCAddress,
   fUSDCABI,
+  flowRate,
 } from "@/lib/constants";
-import { encodeFunctionData, parseEther } from "viem";
+import { encodeFunctionData, formatEther, parseEther } from "viem";
 import { useBalance, useReadContracts, useWalletClient } from "wagmi";
 import Welcome from "@/components/user/welcome";
 import CalendarStreak from "@/components/calendar-streak";
@@ -19,6 +20,10 @@ import Divider from "@/components/divider";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useModalStatus, usePrivy } from "@privy-io/react-auth";
+import FlowingBalance from "@/components/flowing-balance";
+import { Skeleton } from "@/components/ui/skeleton";
+import { activeStreamsQuery } from "@/lib/queries";
+import { useQuery } from "@apollo/client";
 
 export default function User() {
   const { smartAccountClient } = usePimlico();
@@ -30,6 +35,8 @@ export default function User() {
   const ethBalance = useBalance({
     address: walletClient?.account.address,
   });
+
+  const [firstBalance, setFirstBalance] = useState<bigint | undefined>();
 
   const { data: balanceResult, isFetching: isFetchingBalance } =
     useReadContracts({
@@ -46,11 +53,17 @@ export default function User() {
           functionName: "balanceOf",
           args: [smartAccountClient?.account?.address],
         },
-      ]
+      ],
     });
 
   const superUsdcUserBalance = balanceResult?.[0].result as bigint;
   const usdcUserBalance = balanceResult?.[1].result as bigint;
+
+  useEffect(() => {
+    if (firstBalance === undefined && superUsdcUserBalance !== undefined) {
+      setFirstBalance(superUsdcUserBalance);
+    }
+  }, [superUsdcUserBalance]);
 
   if (!isFetchingBalance) {
     console.log("superUsdcUserBalance", superUsdcUserBalance);
@@ -58,10 +71,12 @@ export default function User() {
   }
 
   const directFeeToGym = parseEther(
-    (gymUserFee * (1 - gymUserMaxCashbackPercentage)).toString()
-  )
-  const maxCashbackAmount = parseEther((gymUserFee * gymUserMaxCashbackPercentage).toString())
-  
+    (gymUserFee * (1 - gymUserMaxCashbackPercentage)).toString(),
+  );
+  const maxCashbackAmount = parseEther(
+    (gymUserFee * gymUserMaxCashbackPercentage).toString(),
+  );
+
   const transferApproveAndUpgradeCall = [
     {
       to: USDCAddress,
@@ -84,33 +99,34 @@ export default function User() {
       data: encodeFunctionData({
         abi: ISuperTokenABI,
         functionName: "upgradeTo",
-        args: [gymSmartAccount, maxCashbackAmount, "0x"]
+        args: [gymSmartAccount, maxCashbackAmount, "0x"],
       }),
     },
   ];
 
   async function handleUserMonthlyDeposit() {
-    const transactionHash = usdcUserBalance < parseEther(gymUserFee.toString()) ?
-      await smartAccountClient?.sendTransaction({
-        calls: [
-          {
-            to: USDCAddress,
-            data: encodeFunctionData({
-              abi: fUSDCABI,
-              functionName: "mint",
-              args: [
-                smartAccountClient?.account?.address,
-                parseEther(gymUserFee.toString())
-              ],
-            }),
-          },
-          ...transferApproveAndUpgradeCall,
-        ],
-      }) :
-      await smartAccountClient?.sendTransaction({
-        calls: transferApproveAndUpgradeCall
-      })
-    console.log("tx", transactionHash)
+    const transactionHash =
+      usdcUserBalance < parseEther(gymUserFee.toString())
+        ? await smartAccountClient?.sendTransaction({
+            calls: [
+              {
+                to: USDCAddress,
+                data: encodeFunctionData({
+                  abi: fUSDCABI,
+                  functionName: "mint",
+                  args: [
+                    smartAccountClient?.account?.address,
+                    parseEther(gymUserFee.toString()),
+                  ],
+                }),
+              },
+              ...transferApproveAndUpgradeCall,
+            ],
+          })
+        : await smartAccountClient?.sendTransaction({
+            calls: transferApproveAndUpgradeCall,
+          });
+    console.log("tx", transactionHash);
   }
 
   async function handleUserWithdraw() {
@@ -121,66 +137,109 @@ export default function User() {
           data: encodeFunctionData({
             abi: ISuperTokenABI,
             functionName: "downgrade",
-            args: [superUsdcUserBalance]
+            args: [superUsdcUserBalance],
           }),
-        }
-      ]
-    })
-    console.log("tx", txHash)
+        },
+      ],
+    });
+    console.log("tx", txHash);
   }
 
-  console.log("ethBalance", ethBalance);
+  const [subscriptionActive, setSubscriptionActive] = useState(true);
 
-  const cashback = 2;
-
-  const [subscriptionActive, setSubscriptionActive] = useState(true)
-
-  const { ready, authenticated, login } = usePrivy()
-  const {isOpen} = useModalStatus()
+  const { ready, authenticated, login } = usePrivy();
+  const { isOpen } = useModalStatus();
 
   useEffect(() => {
     if (ready && !authenticated && !isOpen) {
-      login()
+      login();
     }
-  }, [ready, authenticated, isOpen])
+  }, [ready, authenticated, isOpen]);
+
+  const [startingDate, setStartingDate] = useState<Date | null>(null);
+
+  useEffect(() => {
+    if (ready && authenticated) {
+      setStartingDate(new Date());
+    }
+  }, [ready, authenticated]);
+
+  console.log(
+    "smartAccountClient?.account?.address",
+    smartAccountClient?.account?.address,
+  );
+
+  const {
+    loading: loadingQueryRes,
+    error: errorQueryRes,
+    data: dataQueryRes,
+  } = useQuery(activeStreamsQuery, {
+    variables: {
+      receiver: smartAccountClient?.account?.address.toLocaleLowerCase(),
+    },
+    fetchPolicy: "network-only",
+  });
+
+  const streamIsActive = dataQueryRes?.streams.length > 0;
 
   return (
     <div className="w-full min-h-screen flex flex-col gap-4">
       <Welcome name="John" weeklyCompleted={2} weeklyGoal={4} />
+
       <Divider />
-      <div className="rounded-xl p-4 py-0 flex justify-start items-center">
+
+      <div className="rounded-xl p-4 py-0 flex justify-start items-start">
         <div className="flex flex-col items-start gap-1 w-full">
           <span className="text-xl font-medium">Your cashback</span>
-          <span className="text-4xl font-extrabold text-red-500">
-            ${(cashback * 0.15).toFixed(2)}
-          </span>
+          {!loadingQueryRes && startingDate && firstBalance !== undefined ? (
+            streamIsActive ? (
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: "1.2rem",
+                  fontWeight: "bold",
+                  justifyContent: "center",
+                }}
+              >
+                <div style={{ width: "135px", margin: "auto" }}>
+                  <FlowingBalance
+                    startingBalance={firstBalance}
+                    startingBalanceDate={startingDate}
+                    flowRate={flowRate}
+                  />
+                </div>
+              </div>
+            ) : (
+              <span className="text-2xl font-extrabold">
+                ${formatEther(firstBalance).substring(0, 9)}
+              </span>
+            )
+          ) : (
+            <Skeleton className="h-[24px] w-[9rem] rounded-full" />
+          )}
         </div>
         <div className="flex flex-col items-start gap-1 w-full">
           <span className="text-xl font-medium">Your subscription</span>
           <div className="flex gap-1 items-center">
-            <span className="text-4xl font-extrabold">
+            <span className="text-2xl font-extrabold">
               {subscriptionActive ? "Active" : "Expired"}
             </span>
             <Image
               src={`/images/${subscriptionActive ? "+" : "-"}1.png`}
               alt="ok"
-              width={25}
-              height={25}
+              width={20}
+              height={20}
             />
           </div>
         </div>
       </div>
+
       <Divider />
+
       <CalendarStreak />
+
       <CustomBarChart />
-      <div className="flex flex-col items-center justify-center">
-        Eu laboris sunt fugiat quis Lorem proident non officia voluptate sunt id
-        veniam consequat voluptate quis. Ea magna nulla duis id esse nisi qui
-        nostrud. Reprehenderit dolore aliqua nostrud ut sint esse fugiat
-        exercitation qui enim. Magna minim sunt enim. Nulla ad ea deserunt
-        laborum officia aliquip. Lorem id laborum aliquip consequat veniam
-        officia. Enim voluptate id esse et veniam laborum sit dolore labore.
-      </div>
+
       <div className="w-full h-full mt-8">
         <h1>Pay your month subscription</h1>
         <h2>ETH Balance</h2>
