@@ -32,6 +32,7 @@ import { activeStreamsQuery } from "@/lib/queries";
 import { useQuery } from "@apollo/client";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { User as FitUser } from "@prisma/client";
 
 export default function User() {
   const { ready, authenticated, user, login, isModalOpen } = usePrivy();
@@ -54,6 +55,47 @@ export default function User() {
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [subscriptionActive, setSubscriptionActive] = useState(true);
+  const [subscriptionExpires, setSubscriptionExpires] = useState<Date | null>(
+    null,
+  );
+  const [subscriptionDaysLeft, setSubscriptionDaysLeft] = useState<
+    number | null
+  >(null);
+  const [storedUser, setStoredUser] = useState<FitUser | null>(null);
+
+  useEffect(() => {
+    async function fetchUser() {
+      const res = await fetch(`/api/user?userId=${privyId}`);
+      const data = await res.json();
+      setStoredUser(data.data);
+    }
+    fetchUser();
+  }, [user]);
+
+  // calculate if the subscription is active using user.createdAt
+  useEffect(() => {
+    if (storedUser) {
+      const now = new Date();
+      const createdAt = new Date(storedUser.createdAt);
+      const diffTime = Math.abs(now.getTime() - createdAt.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      console.log("diffDays", diffDays);
+      setSubscriptionDaysLeft(30 - diffDays);
+      if (diffDays > 30) {
+        setSubscriptionActive(false);
+      }
+      if (diffDays <= 30) {
+        setSubscriptionExpires(
+          new Date(createdAt.setDate(createdAt.getDate() + 30)),
+        );
+      }
+    }
+  }, [storedUser]);
+  console.log({
+    subscriptionActive,
+    subscriptionExpires,
+    subscriptionDaysLeft,
+  });
 
   const ethBalance = useBalance({
     address: walletClient?.account.address,
@@ -178,8 +220,8 @@ export default function User() {
 
   const {
     data: claimResult,
-    error: claimError,
-    isLoading: claimLoading,
+    // error: claimError,
+    // isLoading: claimLoading,
   } = useTransactionReceipt({
     hash: claimTxHash,
   });
@@ -222,7 +264,7 @@ export default function User() {
 
   return (
     <div className="w-full min-h-screen flex flex-col gap-4">
-      <Welcome name="John" weeklyCompleted={2} weeklyGoal={4} />
+      <Welcome name={storedUser?.name} weeklyCompleted={2} weeklyGoal={4} />
       {user && privyId ? (
         <OnboardUser
           ready={ready}
@@ -298,7 +340,15 @@ export default function User() {
             {subscriptionActive ? "Expires" : "Expired"}
           </span>
           <span className="text-2xl font-extrabold">
-            {subscriptionActive ? "in 5 days" : "Expired"}
+            {subscriptionActive ? (
+              subscriptionDaysLeft ? (
+                `in ${subscriptionDaysLeft} days`
+              ) : (
+                <Skeleton className="h-[24px] w-[8rem] rounded-full" />
+              )
+            ) : (
+              "Expired"
+            )}
           </span>
         </div>
       </div>

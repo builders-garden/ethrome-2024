@@ -47,6 +47,7 @@ model Gym {
   monthlyFee         Float
   cashbackPercentage Float
   address            String
+  flowRate           String?
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt
   User               User[]

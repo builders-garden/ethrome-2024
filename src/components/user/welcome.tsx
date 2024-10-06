@@ -1,8 +1,9 @@
 import { Check, Circle } from "lucide-react";
 import Image from "next/image";
+import { Skeleton } from "../ui/skeleton";
 
 interface WelcomeProps {
-  name: string;
+  name: string | undefined;
   weeklyCompleted: number;
   weeklyGoal: number;
 }
@@ -11,20 +12,22 @@ const Welcome = ({ name, weeklyCompleted, weeklyGoal }: WelcomeProps) => {
   return (
     <div className="flex flex-col p-4 justify-between rounded-xl bg-red-200 gap-4">
       <div className="flex w-full items-center font-[Rengita] justify-between">
-        <div className="flex flex-col items-start gap-1">
-          <span className="text-3xl">
-            Welcome
-          </span>
-          <div className="flex gap-1">
-            <span className="font-thin">{name}</span>
-            <Image
-              src="/images/waving-hand.png"
-              alt="waving hand"
-              width={32/2}
-              height={23/2}
-            />
+        {name ? (
+          <div className="flex flex-col items-start gap-1">
+            <span className="text-3xl">Welcome</span>
+            <div className="flex gap-1">
+              <span className="font-thin">{name}</span>
+              <Image
+                src="/images/waving-hand.png"
+                alt="waving hand"
+                width={32 / 2}
+                height={23 / 2}
+              />
+            </div>
           </div>
-        </div>
+        ) : (
+          <Skeleton className="h-[48px] w-[10rem] rounded-full" />
+        )}
         <Image
           src="/images/user-placeholder.png"
           alt="user"

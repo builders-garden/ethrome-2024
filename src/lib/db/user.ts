@@ -14,6 +14,15 @@ export async function getUsersByGymId(gymId: string): Promise<User[]> {
   });
 }
 
+export async function getUsersLeaderboard(top?: number): Promise<User[]> {
+  return await prisma.user.findMany({
+    orderBy: {
+      totalCashback: "desc",
+    },
+    take: top ?? 10,
+  });
+}
+
 export async function getUserById(id: string): Promise<User | null> {
   return await prisma.user.findUnique({
     where: { id },

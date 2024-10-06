@@ -16,6 +16,7 @@ export default function Dashboard() {
   const { user, ready, authenticated } = usePrivy();
   const { smartAccountClient } = usePimlico();
   console.log("smartAccount", smartAccountClient?.account?.address);
+  console.log("user", user?.wallet?.address, user?.id);
 
   const [gyms, setGyms] = useState<Gym[]>([]);
   const [refetchGym, setRefetchGym] = useState(true);
