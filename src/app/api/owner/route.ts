@@ -1,5 +1,27 @@
 import { NextResponse } from "next/server";
-import { createOwner } from "@/lib/db";
+import { createOwner, getOwnerById } from "@/lib/db";
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    if (!id) {
+      console.error("Missing required fields");
+      return NextResponse.json(
+        { status: "nok", error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+    const owner = await getOwnerById(id);
+    return NextResponse.json({ data: owner, status: "ok" }, { status: 200 });
+  } catch (error) {
+    console.error("Error getting owner:", error);
+    return NextResponse.json(
+      { status: "nok", error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: Request) {
   try {

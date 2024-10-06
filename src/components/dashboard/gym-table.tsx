@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -12,6 +13,7 @@ import {
 import { Gym } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { Pencil, X } from "lucide-react";
 
 const getGymsByOwnerId = async (ownerId: string): Promise<Gym[]> => {
   const data = await fetch(`/api/gym?ownerId=${ownerId}`).then((res) =>
@@ -23,16 +25,35 @@ const getGymsByOwnerId = async (ownerId: string): Promise<Gym[]> => {
   return data.data;
 };
 
-const GymTable = ({ ownerId }: { ownerId: string }) => {
-  const { data: gyms } = useQuery({
+const GymTable = ({
+  ownerId,
+  refetchGym,
+  setRefetchGym,
+  setGyms,
+}: {
+  ownerId: string;
+  refetchGym: boolean;
+  setRefetchGym: (refetch: boolean) => void;
+  setGyms: (gyms: Gym[]) => void;
+}) => {
+  const { data: gyms, isSuccess } = useQuery({
     queryKey: ["gyms"],
     queryFn: () => getGymsByOwnerId(ownerId),
+    enabled: refetchGym,
   });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setRefetchGym(false);
+      setGyms(gyms);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSuccess]);
 
   return (
     <div className="flex flex-col gap-2 my-10">
       <Table>
-        <TableCaption>A list of the users in your league</TableCaption>
+        <TableCaption>A list of your gyms</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
@@ -48,8 +69,12 @@ const GymTable = ({ ownerId }: { ownerId: string }) => {
               <TableCell>{gym.monthlyFee}</TableCell>
               <TableCell>{gym.cashbackPercentage}</TableCell>
               <TableCell>
-                <Button>Edit</Button>
-                <Button>Delete</Button>
+                <Button variant="ghost">
+                  <Pencil size={16} className="text-primary" />
+                </Button>
+                <Button variant="ghost">
+                  <X size={16} className="text-primary" />
+                </Button>
               </TableCell>
             </TableRow>
           ))}

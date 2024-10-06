@@ -19,9 +19,11 @@ import { toast } from "sonner";
 function RegisterGym({
   address,
   ownerId,
+  setRefetchGym,
 }: {
   address: string;
   ownerId: string;
+  setRefetchGym: (refetch: boolean) => void;
 }) {
   const closeDialogRef = useRef<HTMLButtonElement>(null);
   const [gymName, setGymName] = useState("");
@@ -47,6 +49,7 @@ function RegisterGym({
       toast.success("Gym created", {
         description: `${gym.data.name} created successfully`,
       });
+      setRefetchGym(true);
       closeDialogRef.current?.click();
       setGymName("");
       setMonthlyFee(0);

@@ -6,6 +6,7 @@ import { WagmiProvider } from "@privy-io/wagmi";
 import { wagmiConfig } from "@/lib/wagmi";
 import { sepolia } from "viem/chains";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
             disableTransitionOnChange
           >
             {children}
+            <Toaster />
           </ThemeProvider>
         </WagmiProvider>
       </QueryClientProvider>

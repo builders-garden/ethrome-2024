@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 import {
   Dialog,
   DialogContent,
@@ -11,39 +15,57 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
-interface CreateOwnerProps {
-  id: string;
-  email: string;
+interface OnboardOwnerProps {
+  ready: boolean;
+  authenticated: boolean;
   name: string;
-  address: string;
+  email: string;
+  privyId: string;
 }
 
-function CreateOwner({ id, name, email, address }: CreateOwnerProps) {
+function OnboardOwner({
+  ready,
+  authenticated,
+  name,
+  email,
+  privyId,
+}: OnboardOwnerProps) {
   const [ownerName, setOwnerName] = useState(name);
   const [ownerEmail, setOwnerEmail] = useState(email);
 
+  const dialogTriggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (ready && authenticated) {
+      fetch(`/api/owner?id=${privyId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === "ok") {
+            console.log("Owner already exists");
+          } else {
+            dialogTriggerRef.current?.click();
+          }
+        });
+    }
+  }, [ready, authenticated, privyId]);
+
   const handleSubmit = async () => {
     const ownerData = {
-      id,
+      id: privyId,
       name: ownerName,
       email: ownerEmail,
-      address: address,
     };
     const owner = await fetch("/api/owner", {
       method: "POST",
       body: JSON.stringify(ownerData),
     });
-    console.log(owner);
+    console.log("owner created", owner);
   };
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline">Create Owner</Button>
-      </DialogTrigger>
+      <DialogTrigger ref={dialogTriggerRef} />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create New Owner</DialogTitle>
@@ -89,4 +111,4 @@ function CreateOwner({ id, name, email, address }: CreateOwnerProps) {
   );
 }
 
-export default CreateOwner;
+export default OnboardOwner;
