@@ -11,7 +11,12 @@ import {
   flowRate,
 } from "@/lib/constants";
 import { encodeFunctionData, formatEther, parseEther } from "viem";
-import { useBalance, useReadContracts, useWalletClient } from "wagmi";
+import {
+  useBalance,
+  useReadContracts,
+  useTransactionReceipt,
+  useWalletClient,
+} from "wagmi";
 import Welcome from "@/components/user/welcome";
 import CalendarStreak from "@/components/calendar-streak";
 import CustomBarChart from "@/components/charts/custom-bar-chart";
@@ -25,6 +30,8 @@ import FlowingBalance from "@/components/flowing-balance";
 import { Skeleton } from "@/components/ui/skeleton";
 import { activeStreamsQuery } from "@/lib/queries";
 import { useQuery } from "@apollo/client";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 export default function User() {
   const { ready, authenticated, user, login, isModalOpen } = usePrivy();
@@ -146,7 +153,13 @@ export default function User() {
     console.log("tx", transactionHash);
   }
 
+  const [claimTxHash, setClaimTxHash] = useState<`0x${string}` | undefined>(
+    undefined,
+  );
+  const [claiming, setClaiming] = useState(false);
+
   async function handleUserWithdraw() {
+    setClaiming(true);
     const txHash = await smartAccountClient?.sendTransaction({
       calls: [
         {
@@ -159,8 +172,28 @@ export default function User() {
         },
       ],
     });
-    console.log("tx", txHash);
+    setClaimTxHash(txHash);
+    setClaiming(false);
   }
+
+  const {
+    data: claimResult,
+    error: claimError,
+    isLoading: claimLoading,
+  } = useTransactionReceipt({
+    hash: claimTxHash,
+  });
+
+  console.log("claimResult", claimResult);
+
+  // set claiming to false when transaction is confirmed
+  useEffect(() => {
+    if (claimResult?.status === "success") {
+      setClaiming(false);
+      setFirstBalance(BigInt(0));
+      setStartingDate(new Date());
+    }
+  }, [claimResult]);
 
   const [startingDate, setStartingDate] = useState<Date | null>(null);
 
@@ -203,7 +236,7 @@ export default function User() {
 
       <Divider />
 
-      <div className="rounded-xl p-4 py-0 flex justify-start items-start">
+      <div className="rounded-xl p-4 py-0 flex justify-start items-center">
         <div className="flex flex-col items-start gap-1 w-full">
           <span className="text-xl font-medium">Your cashback</span>
           {!loadingQueryRes && startingDate && firstBalance !== undefined ? (
@@ -233,6 +266,19 @@ export default function User() {
             <Skeleton className="h-[24px] w-[9rem] rounded-full" />
           )}
         </div>
+        <Button
+          className="text-xl h-auto w-[7rem]"
+          onClick={handleUserWithdraw}
+          disabled={claiming}
+        >
+          {claiming && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Claim
+        </Button>
+      </div>
+
+      <Divider />
+
+      <div className="rounded-xl p-4 py-0 flex justify-start items-center">
         <div className="flex flex-col items-start gap-1 w-full">
           <span className="text-xl font-medium">Your subscription</span>
           <div className="flex gap-1 items-center">
@@ -246,6 +292,14 @@ export default function User() {
               height={20}
             />
           </div>
+        </div>
+        <div className="flex flex-col items-end gap-1 w-full">
+          <span className="text-xl font-medium">
+            {subscriptionActive ? "Expires" : "Expired"}
+          </span>
+          <span className="text-2xl font-extrabold">
+            {subscriptionActive ? "in 5 days" : "Expired"}
+          </span>
         </div>
       </div>
 
