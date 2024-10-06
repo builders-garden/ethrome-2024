@@ -8,7 +8,7 @@ import { LogOut } from "lucide-react";
 const HeaderDesktop = () => {
   const { authenticated, user, login, logout } = usePrivy();
   return (
-    <header className="container flex items-center justify-between gap-10 py-4">
+    <header className="flex items-center justify-between gap-10 py-4">
       <Link href="/" className="flex flex-1 items-center gap-3">
         {/* <Image
           src="/images/6-sigma.png"
@@ -42,7 +42,7 @@ const HeaderDesktop = () => {
       </nav>
       <div className="flex flex-1 items-center justify-end gap-2">
         {authenticated && user ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-end gap-2">
             <span className="text-sm text-muted-foreground">
               {`${user.wallet?.address?.slice(
                 0,
