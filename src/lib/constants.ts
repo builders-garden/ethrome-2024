@@ -5,14 +5,14 @@ export const adminWallets = [
 
 // same address in each chain
 export const CFAv1ForwarderAddress =
-  "0xcfA132E353cB4E398080B9700609bb008eceB125";
+  "0xcfA132E353cB4E398080B9700609bb008eceB125" as `0x${string}`;
 export const GDAv1ForwarderAddress =
-  "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08";
-export const USDCAddress = "0xe72f289584eda2be69cfe487f4638f09bac920db"
-export const SuperUSDCAddress = "0xb598E6C621618a9f63788816ffb50Ee2862D443B"
+  "0x6DA13Bde224A05a288748d857b9e7DDEffd1dE08" as `0x${string}`;
+export const USDCAddress = "0xe72f289584eda2be69cfe487f4638f09bac920db" as `0x${string}`;
+export const SuperUSDCAddress = "0xb598E6C621618a9f63788816ffb50Ee2862D443B" as `0x${string}`;
 
 // TODO: move this inside a DB or other resource
-export const gymSmartAccount = "0x30E10aFbD63A8544a2F5DF7a25C0214541fCBc3c";
+export const gymSmartAccount = "0x30E10aFbD63A8544a2F5DF7a25C0214541fCBc3c" as `0x${string}`;
 export const gymUserFee = 50; // 50 USDC per month
 export const gymUserMaxCashbackPercentage = 0.2;
 
@@ -2286,3 +2286,5 @@ export const ISuperTokenABI = [
 		"type": "function"
 	}
 ]
+
+export const fUSDCABI = [{"inputs":[{"internalType":"string","name":"name","type":"string"},{"internalType":"string","name":"symbol","type":"string"},{"internalType":"uint8","name":"initDecimals","type":"uint8"},{"internalType":"uint256","name":"mintLimit","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"subtractedValue","type":"uint256"}],"name":"decreaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"addedValue","type":"uint256"}],"name":"increaseAllowance","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"account","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mint","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}]

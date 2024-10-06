@@ -6,17 +6,19 @@ import {
   gymUserMaxCashbackPercentage,
   ISuperTokenABI,
   SuperUSDCAddress,
-  USDCAddress
+  USDCAddress,
+  fUSDCABI,
 } from "@/lib/constants";
-import { encodeFunctionData, erc20Abi, parseEther } from "viem";
-import { useBalance, useReadContract, useWalletClient } from "wagmi";
+import { encodeFunctionData, parseEther } from "viem";
+import { useBalance, useReadContracts, useWalletClient } from "wagmi";
 import Welcome from "@/components/user/welcome";
 import CalendarStreak from "@/components/calendar-streak";
 import CustomBarChart from "@/components/charts/custom-bar-chart";
 import usePimlico from "@/hooks/use-pimlico";
 import Divider from "@/components/divider";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useModalStatus, usePrivy } from "@privy-io/react-auth";
 
 export default function User() {
   const { smartAccountClient } = usePimlico();
@@ -29,51 +31,88 @@ export default function User() {
     address: walletClient?.account.address,
   });
 
-  async function handleUserMonthlyDeposit() {
-    const directFeeToGym = parseEther(
-      (gymUserFee * (1 - gymUserMaxCashbackPercentage)).toString()
-    )
-    const maxCashbackAmount = parseEther((gymUserFee * gymUserMaxCashbackPercentage).toString())
-    const transactionHash = await smartAccountClient?.sendTransaction({
-      calls: [
+  const { data: balanceResult, isFetching: isFetchingBalance } =
+    useReadContracts({
+      contracts: [
         {
-          to: USDCAddress,
-          data: encodeFunctionData({
-            abi: erc20Abi,
-            functionName: "transfer",
-            args: [gymSmartAccount, directFeeToGym],
-          }),
+          address: SuperUSDCAddress,
+          abi: ISuperTokenABI,
+          functionName: "balanceOf",
+          args: [smartAccountClient?.account?.address],
         },
         {
-          to: USDCAddress,
-          data: encodeFunctionData({
-            abi: erc20Abi,
-            functionName: "approve",
-            args: [SuperUSDCAddress, maxCashbackAmount],
-          }),
+          address: USDCAddress,
+          abi: fUSDCABI,
+          functionName: "balanceOf",
+          args: [smartAccountClient?.account?.address],
         },
-        {
-          to: SuperUSDCAddress,
-          data: encodeFunctionData({
-            abi: ISuperTokenABI,
-            functionName: "upgradeTo",
-            args: [gymSmartAccount, maxCashbackAmount, "0x"]
-          }),
-        },
-      ],
-    })
-    console.log("tx", transactionHash)
+      ]
+    });
+
+  const superUsdcUserBalance = balanceResult?.[0].result as bigint;
+  const usdcUserBalance = balanceResult?.[1].result as bigint;
+
+  if (!isFetchingBalance) {
+    console.log("superUsdcUserBalance", superUsdcUserBalance);
+    console.log("usdcUserBalance", usdcUserBalance);
   }
 
-  const { data: balanceResult, isFetching: isFetchingBalance } =
-    useReadContract({
-      address: SuperUSDCAddress,
-      abi: ISuperTokenABI,
-      functionName: "balanceOf",
-      args: [smartAccountClient?.account?.address],
-    });
-  if (!isFetchingBalance) {
-    console.log("FETCHED: super balance", balanceResult);
+  const directFeeToGym = parseEther(
+    (gymUserFee * (1 - gymUserMaxCashbackPercentage)).toString()
+  )
+  const maxCashbackAmount = parseEther((gymUserFee * gymUserMaxCashbackPercentage).toString())
+  
+  const transferApproveAndUpgradeCall = [
+    {
+      to: USDCAddress,
+      data: encodeFunctionData({
+        abi: fUSDCABI,
+        functionName: "transfer",
+        args: [gymSmartAccount, directFeeToGym],
+      }),
+    },
+    {
+      to: USDCAddress,
+      data: encodeFunctionData({
+        abi: fUSDCABI,
+        functionName: "approve",
+        args: [SuperUSDCAddress, maxCashbackAmount],
+      }),
+    },
+    {
+      to: SuperUSDCAddress,
+      data: encodeFunctionData({
+        abi: ISuperTokenABI,
+        functionName: "upgradeTo",
+        args: [gymSmartAccount, maxCashbackAmount, "0x"]
+      }),
+    },
+  ];
+
+  async function handleUserMonthlyDeposit() {
+    console.log("usdcUserBalance", usdcUserBalance, "gymUserFee", gymUserFee)
+    console.log("minting", parseEther(gymUserFee.toString()))
+    const transactionHash = usdcUserBalance < parseEther(gymUserFee.toString()) ?
+      await smartAccountClient?.sendTransaction({
+        calls: [
+          {
+            to: USDCAddress,
+            data: encodeFunctionData({
+              abi: fUSDCABI,
+              functionName: "mint",
+              args: [
+                smartAccountClient?.account?.address,
+                parseEther(gymUserFee.toString())
+              ],
+            }),
+          },
+          ...transferApproveAndUpgradeCall,
+        ],
+      }) :
+      await smartAccountClient?.sendTransaction({
+        calls: transferApproveAndUpgradeCall
+      })
+    console.log("tx", transactionHash)
   }
 
   async function handleUserWithdraw() {
@@ -84,7 +123,7 @@ export default function User() {
           data: encodeFunctionData({
             abi: ISuperTokenABI,
             functionName: "downgrade",
-            args: [balanceResult]
+            args: [superUsdcUserBalance]
           }),
         }
       ]
@@ -97,6 +136,15 @@ export default function User() {
   const cashback = 2;
 
   const [subscriptionActive, setSubscriptionActive] = useState(true)
+
+  const { ready, authenticated, login } = usePrivy()
+  const {isOpen} = useModalStatus()
+
+  useEffect(() => {
+    if (ready && !authenticated && !isOpen) {
+      login()
+    }
+  }, [ready, authenticated, isOpen])
 
   return (
     <div className="w-full min-h-screen flex flex-col gap-4">
