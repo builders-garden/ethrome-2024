@@ -17,12 +17,43 @@ import { sepolia } from "viem/chains";
 import { usePrivy } from "@privy-io/react-auth";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Gym, TrainingSession } from "@prisma/client";
+import { TrainingSessionStatus } from "@/lib/db";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardQR() {
   const [dynamicUUID, setDynamicUUID] = useState("");
   const { authenticated, user } = usePrivy();
   const [account, setAccount] = useState<`0x${string}` | undefined>(undefined);
   const { data: walletClient } = useWalletClient();
+  const [newTrainingSession, setNewTrainingSession] =
+    useState<TrainingSession | null>(null);
+  const [gym, setGym] = useState<Gym | null>(null);
+  const [enableConfirm, setEnableConfirm] = useState(false);
+
+  useEffect(() => {
+    async function fetchTrainingSession() {
+      const gymResult = await fetch(`/api/gym?ownerId=${user?.id}`);
+      const gymData = await gymResult.json();
+      setGym(gymData.data[0]);
+      console.log("gymData data", gymData.data[0]);
+      if (gymData.data[0]) {
+        const res = await fetch("/api/training-session/", {
+          method: "POST",
+          body: JSON.stringify({
+            gymId: gymData.data[0].id,
+            status: TrainingSessionStatus.PENDING,
+          }),
+        });
+        const data = await res.json();
+        setNewTrainingSession(data.data);
+      }
+    }
+    fetchTrainingSession();
+  }, [user?.id]);
+
+  console.log("newTrainingSession", newTrainingSession);
+  console.log("gym", gym);
 
   useEffect(() => {
     if (authenticated && user?.wallet?.address) {
@@ -40,7 +71,7 @@ export default function DashboardQR() {
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, []);
 
-  const link = `${APP_URL}/user/training-session/start/?id=${dynamicUUID}`;
+  // const link = `${APP_URL}/user/training-session/start/?id=${dynamicUUID}`;
 
   async function handleCreateFlow() {
     try {
@@ -97,8 +128,18 @@ export default function DashboardQR() {
         Scan the QR code to start your training session
       </h3>
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        {dynamicUUID && <QRCode value={link} />}
-        <Button className="bg-red-500 mx-4 mt-4" onClick={startTrainingSession}>
+        {dynamicUUID && newTrainingSession && gym ? (
+          <QRCode
+            value={`${APP_URL}/user/training-session/start/?id=${newTrainingSession.id}&dynamic=${dynamicUUID}`}
+          />
+        ) : (
+          <Skeleton className="h-[200px] w-[200px] rounded-lg my-4" />
+        )}
+        <Button
+          className="bg-red-500 mx-4 mt-4"
+          onClick={startTrainingSession}
+          disabled={!enableConfirm}
+        >
           Confirm
         </Button>
       </div>

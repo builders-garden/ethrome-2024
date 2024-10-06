@@ -7,7 +7,9 @@ type PartialUser = {
 };
 
 export enum TrainingSessionStatus {
+  PENDING = "PENDING",
   ENTERED = "ENTERED",
+  EXITING = "EXITING",
   LEFT = "LEFT",
 }
 
