@@ -18,6 +18,9 @@ export default function UserQr() {
 
   return (
     <div className="w-full min-h-screen">
+      <div className="flex flex-row items-center justify-between py-5 px-4">
+        <h1 className="text-3xl font-bold">Scan your Way</h1>
+      </div>
       <ScanQR />
     </div>
   );

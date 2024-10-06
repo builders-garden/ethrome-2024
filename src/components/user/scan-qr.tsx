@@ -6,14 +6,28 @@ import {
   useDevices,
   boundingBox,
 } from "@yudiel/react-qr-scanner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useRouter } from "next/navigation";
+import { APP_URL } from "@/lib/utils";
 
 const ScanQR = () => {
+  const router = useRouter();
   const devices = useDevices();
   const [deviceId, setDeviceId] = useState<string | undefined>(undefined);
 
   const handleOnScan = (detectedCodes: IDetectedBarcode[]) => {
-    console.log("detectedCodes", detectedCodes);
+    const link = detectedCodes[0].rawValue;
+    console.log("scanned link", link);
+    if (link.startsWith(`${APP_URL}/user/`)) {
+      router.push(link);
+    }
   };
   const handleScanError = (error: unknown) => {
     console.error("Error scanning QR code", error);
@@ -24,15 +38,19 @@ const ScanQR = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center h-[50vh]">
-      <select onChange={(e) => setDeviceId(e.target.value)}>
-        <option value={undefined}>Select a device</option>
-        {devices.map((device, index) => (
-          <option key={index} value={device.deviceId}>
-            {device.label}
-          </option>
-        ))}
-      </select>
+    <div className="flex flex-col gap-4 items-center justify-center h-[50vh] px-2 py-4">
+      <Select onValueChange={(value) => setDeviceId(value)}>
+        <SelectTrigger>
+          <SelectValue placeholder="Select a device" />
+        </SelectTrigger>
+        <SelectContent>
+          {devices.map((device, index) => (
+            <SelectItem key={index} value={device.deviceId}>
+              {device.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
       <div className="w-full h-[50vh]">
         {deviceId && deviceId !== undefined && (
           <Scanner
