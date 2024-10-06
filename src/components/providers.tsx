@@ -7,6 +7,7 @@ import { wagmiConfig } from "@/lib/wagmi";
 import { sepolia } from "viem/chains";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 
 const queryClient = new QueryClient();
 
@@ -24,23 +25,30 @@ const privyConfig: PrivyClientConfig = {
   supportedChains: [sepolia],
 };
 
+const apolloClient = new ApolloClient({
+  uri: "https://subgraph-endpoints.superfluid.dev/eth-sepolia/protocol-v1/",
+  cache: new InMemoryCache(),
+});
+
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
-    <PrivyProvider appId="cm1ursrn606y7c56nfnh2j8oi" config={privyConfig}>
-      <QueryClientProvider client={queryClient}>
-        <WagmiProvider config={wagmiConfig}>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster />
-          </ThemeProvider>
-        </WagmiProvider>
-      </QueryClientProvider>
-    </PrivyProvider>
+    <ApolloProvider client={apolloClient}>
+      <PrivyProvider appId="cm1ursrn606y7c56nfnh2j8oi" config={privyConfig}>
+        <QueryClientProvider client={queryClient}>
+          <WagmiProvider config={wagmiConfig}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster />
+            </ThemeProvider>
+          </WagmiProvider>
+        </QueryClientProvider>
+      </PrivyProvider>
+    </ApolloProvider>
   );
 };
 

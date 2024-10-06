@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.11.8",
     "@prisma/client": "^5.20.0",
     "@privy-io/react-auth": "^1.88.3",
     "@privy-io/wagmi": "^0.2.12",
@@ -23,6 +24,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "graphql": "^16.9.0",
     "lucide-react": "^0.447.0",
     "next": "14.2.14",
     "next-themes": "^0.3.0",
