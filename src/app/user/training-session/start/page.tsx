@@ -132,8 +132,8 @@ export default function UserQr() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background items-center">
-      <h1 className="text-3xl font-bold">Training Session Ended! 👋</h1>
-      <h3 className="text-lg">Scan the QR code to end your training session</h3>
+      <h1 className="text-3xl font-bold">Training Session Started! 🏋🏽</h1>
+      <h3 className="text-lg">Enjoy your workout!</h3>
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
         <Link href="/user">
           <Button>Back</Button>

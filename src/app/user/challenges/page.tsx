@@ -36,7 +36,7 @@ export default function UserChallenges() {
       <div className="flex flex-row items-center justify-between py-5 px-4">
         <h1 className="text-3xl font-bold">Challenges 🏋🏽</h1>
       </div>
-      <div className="grid grid-cols-1 gap-4">
+      <div className="grid grid-cols-1 gap-2">
         {challenges.map((challenge) => (
           <ChallengeCard key={challenge.name} {...challenge} />
         ))}

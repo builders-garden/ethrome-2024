@@ -7,7 +7,7 @@ import { Skeleton } from "../ui/skeleton";
 
 const LeaderboardHero = () => {
   const { user } = usePrivy();
-  const defaultSize = 55;
+  const defaultSize = 50;
   const expandedSize = 70;
 
   const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -26,8 +26,8 @@ const LeaderboardHero = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <div className="flex items-center justify-center">
+    <div className="flex flex-col items-center justify-center px-4 gap-4">
+      <div className="flex items-center justify-between w-full pt-4">
         <Shield
           size={defaultSize}
           className="text-orange-900 fill-orange-900"
@@ -38,29 +38,35 @@ const LeaderboardHero = () => {
           className="text-orange-500 fill-orange-500"
         />
         <Shield size={expandedSize} className="text-green-500 fill-green-500" />
-        <ShieldAlert size={defaultSize} className="text-slate-400" />
-        <ShieldAlert size={defaultSize} className="text-slate-400" />
+        <ShieldAlert
+          size={defaultSize}
+          className="text-slate-400"
+          strokeWidth={1.25}
+        />
+        <ShieldAlert
+          size={defaultSize}
+          className="text-slate-400"
+          strokeWidth={1.25}
+        />
       </div>
 
-      <h1 className="text-2xl font-bold">Emerald League</h1>
+      <h1 className="text-3xl font-bold">Emerald League</h1>
 
-      <div className="flex gap-4 mt-4">
-        <div className="bg-green-100 p-4 rounded-lg text-center">
-          <p className="text-sm text-green-600 font-semibold">Your Position</p>
+      <div className="flex gap-4 w-full">
+        <div className="bg-red-200 p-4 rounded-lg text-center w-full">
+          <p className="text-sm font-semibold">Your Position</p>
           {user?.id ? (
-            <p className="text-3xl font-bold text-green-700">
-              {`${userRank(user?.id)} th`}
-            </p>
+            <p className="text-3xl font-bold">{`${userRank(user?.id)} th`}</p>
           ) : (
             <Skeleton className="h-[32px] w-[5rem] rounded-full my-2" />
           )}
-          <p className="text-xs text-green-500">Keep going!</p>
+          <p className="text-xs">Keep going!</p>
         </div>
 
-        <div className="bg-blue-100 p-4 rounded-lg text-center">
-          <p className="text-sm text-blue-600 font-semibold">Time Left</p>
-          <p className="text-3xl font-bold text-blue-700">2d 14h</p>
-          <p className="text-xs text-blue-500">League ends Sunday at 20:00</p>
+        <div className="bg-red-200 p-4 rounded-lg text-center w-full">
+          <p className="text-sm font-semibold">Time Left</p>
+          <p className="text-3xl font-bold">2d 14h</p>
+          <p className="text-xs">League ends Sunday at 20:00</p>
         </div>
       </div>
     </div>

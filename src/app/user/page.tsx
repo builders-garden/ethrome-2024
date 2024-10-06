@@ -33,6 +33,7 @@ import { useQuery } from "@apollo/client";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { User as FitUser } from "@prisma/client";
+import { toast } from "sonner";
 
 export default function User() {
   const { ready, authenticated, user, login, isModalOpen } = usePrivy();
@@ -232,6 +233,7 @@ export default function User() {
   // set claiming to false when transaction is confirmed
   useEffect(() => {
     if (claimResult?.status === "success") {
+      toast.success("Cashback claimed successfully! 🎉");
       setClaiming(false);
       setFirstBalance(BigInt(0));
       setStartingDate(new Date());
@@ -367,7 +369,7 @@ export default function User() {
 
       <CustomBarChart />
 
-      <div className="w-full h-full mt-8">
+      {/* <div className="w-full h-full mt-8">
         <h1>Pay your month subscription</h1>
         <h2>ETH Balance</h2>
         <code>
@@ -382,7 +384,7 @@ export default function User() {
         <p>Max cashback (%): {gymUserMaxCashbackPercentage * 100}%</p>
         <button onClick={handleUserMonthlyDeposit}>Deposit</button>
         <button onClick={handleUserWithdraw}>Withdraw</button>
-      </div>
+      </div> */}
     </div>
   );
 }

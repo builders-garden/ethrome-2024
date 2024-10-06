@@ -71,6 +71,8 @@ const Fluid = () => {
     address: smartAccount,
   });
 
+  console.log("walletClient", walletClient?.account.address);
+
   async function handleCreateFlow() {
     if (!smartAccount) {
       throw new Error("Smart account address not available");
@@ -88,7 +90,7 @@ const Fluid = () => {
           // sender
           account,
           // receiver
-          "0xAf491BE3402245400a537F84c09513cd9C371a50",
+          "0xA7c02289AcC571191b726467cF19beF9FCF2e7A8",
           // flow rate
           flowRate,
           // bytes
@@ -118,7 +120,7 @@ const Fluid = () => {
           // sender
           account,
           // receiver
-          "0xAf491BE3402245400a537F84c09513cd9C371a50",
+          "0xA7c02289AcC571191b726467cF19beF9FCF2e7A8",
           // bytes
           "0x",
         ],

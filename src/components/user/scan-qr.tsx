@@ -44,11 +44,17 @@ const ScanQR = () => {
           <SelectValue placeholder="Select a device" />
         </SelectTrigger>
         <SelectContent>
-          {devices.map((device, index) => (
-            <SelectItem key={index} value={device.deviceId}>
-              {device.label}
-            </SelectItem>
-          ))}
+          {devices.map((device, index) => {
+            if (device.deviceId) {
+              return (
+                <SelectItem key={index} value={device.deviceId}>
+                  {device.label}
+                </SelectItem>
+              );
+            } else {
+              return null;
+            }
+          })}
         </SelectContent>
       </Select>
       <div className="w-full h-[50vh]">

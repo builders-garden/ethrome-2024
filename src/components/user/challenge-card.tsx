@@ -15,7 +15,7 @@ const ChallengeCard = ({
   progress,
 }: ChallengeCardProps) => {
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 relative">
+    <div className="rounded-lg bg-red-200 p-4 relative">
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-xl font-bold text-gray-800">{name}</h2>

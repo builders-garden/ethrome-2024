@@ -4,18 +4,29 @@ import { Button } from "@/components/ui/button";
 import { usePrivy } from "@privy-io/react-auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { fUSDCABI, USDCAddress } from "@/lib/constants";
-import { formatEther } from "viem";
+import {
+  fUSDCABI,
+  gymSmartAccount,
+  gymUserFee,
+  gymUserMaxCashbackPercentage,
+  ISuperTokenABI,
+  SuperUSDCAddress,
+  USDCAddress,
+} from "@/lib/constants";
+import { encodeFunctionData, formatEther, parseEther } from "viem";
 import usePimlico from "@/hooks/use-pimlico";
-import { useReadContract } from "wagmi";
+import { useReadContract, useReadContracts } from "wagmi";
 import { Gym } from "@prisma/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import Divider from "@/components/divider";
+import { toast } from "sonner";
 
 export default function UserProfile() {
   const { logout, ready, authenticated, user } = usePrivy();
   const router = useRouter();
   const [gym, setGym] = useState<Gym | null>(null);
+
+  console.log("user", user);
 
   useEffect(() => {
     if (ready && !authenticated) {
@@ -35,12 +46,12 @@ export default function UserProfile() {
   const usdcBalance = balanceResult as bigint;
 
   const formatFloat = (n: bigint) => {
-    return parseFloat(formatEther(n)).toFixed(2);
+    return parseFloat(formatEther(n)).toFixed(4);
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
-      alert("Address copied to clipboard!");
+      toast.success("Address copied to clipboard!");
     });
   };
 
@@ -59,6 +70,86 @@ export default function UserProfile() {
       fetchGymOfUser();
     }
   }, [user?.id]);
+
+  const { data: fullbalanceResult, isFetching: isFetchingBalance } =
+    useReadContracts({
+      contracts: [
+        {
+          address: SuperUSDCAddress,
+          abi: ISuperTokenABI,
+          functionName: "balanceOf",
+          args: [smartAccountClient?.account?.address],
+        },
+        {
+          address: USDCAddress,
+          abi: fUSDCABI,
+          functionName: "balanceOf",
+          args: [smartAccountClient?.account?.address],
+        },
+      ],
+    });
+
+  const superUsdcUserBalance = fullbalanceResult?.[0].result as bigint;
+  const usdcUserBalance = fullbalanceResult?.[1].result as bigint;
+
+  const directFeeToGym = parseEther(
+    (gymUserFee * (1 - gymUserMaxCashbackPercentage)).toString(),
+  );
+  const maxCashbackAmount = parseEther(
+    (gymUserFee * gymUserMaxCashbackPercentage).toString(),
+  );
+
+  const transferApproveAndUpgradeCall = [
+    {
+      to: USDCAddress,
+      data: encodeFunctionData({
+        abi: fUSDCABI,
+        functionName: "transfer",
+        args: [gymSmartAccount, directFeeToGym],
+      }),
+    },
+    {
+      to: USDCAddress,
+      data: encodeFunctionData({
+        abi: fUSDCABI,
+        functionName: "approve",
+        args: [SuperUSDCAddress, maxCashbackAmount],
+      }),
+    },
+    {
+      to: SuperUSDCAddress,
+      data: encodeFunctionData({
+        abi: ISuperTokenABI,
+        functionName: "upgradeTo",
+        args: [gymSmartAccount, maxCashbackAmount, "0x"],
+      }),
+    },
+  ];
+
+  async function handleUserMonthlyDeposit() {
+    const transactionHash =
+      usdcUserBalance < parseEther(gymUserFee.toString())
+        ? await smartAccountClient?.sendTransaction({
+            calls: [
+              {
+                to: USDCAddress,
+                data: encodeFunctionData({
+                  abi: fUSDCABI,
+                  functionName: "mint",
+                  args: [
+                    smartAccountClient?.account?.address,
+                    parseEther(gymUserFee.toString()),
+                  ],
+                }),
+              },
+              ...transferApproveAndUpgradeCall,
+            ],
+          })
+        : await smartAccountClient?.sendTransaction({
+            calls: transferApproveAndUpgradeCall,
+          });
+    console.log("tx", transactionHash);
+  }
 
   return (
     <div className="w-full min-h-screen">
@@ -128,7 +219,16 @@ export default function UserProfile() {
             </div>
           </div>
         </div>
-        <Button className="bg-red-500 mx-4 mt-4" onClick={logout}>
+
+        <Divider />
+
+        <Button className="bg-red-500 mx-4" onClick={handleUserMonthlyDeposit}>
+          Subscribe
+        </Button>
+
+        <Divider />
+
+        <Button className="bg-red-500 mx-4" onClick={logout}>
           Logout
         </Button>
       </div>
