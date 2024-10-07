@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   fUSDCABI,
-  gymSmartAccount,
   gymUserFee,
   gymUserMaxCashbackPercentage,
   ISuperTokenABI,
@@ -43,7 +42,7 @@ export default function UserProfile() {
     args: [smartAccountClient?.account?.address],
   });
 
-  const usdcBalance = balanceResult as bigint;
+  const usdcBalance = balanceResult as bigint | undefined;
 
   const formatFloat = (n: bigint) => {
     return parseFloat(formatEther(n)).toFixed(4);
@@ -71,25 +70,26 @@ export default function UserProfile() {
     }
   }, [user?.id]);
 
-  const { data: fullbalanceResult, isFetching: isFetchingBalance } =
-    useReadContracts({
-      contracts: [
-        {
-          address: SuperUSDCAddress,
-          abi: ISuperTokenABI,
-          functionName: "balanceOf",
-          args: [smartAccountClient?.account?.address],
-        },
-        {
-          address: USDCAddress,
-          abi: fUSDCABI,
-          functionName: "balanceOf",
-          args: [smartAccountClient?.account?.address],
-        },
-      ],
-    });
+  console.log("gym here", gym);
 
-  const superUsdcUserBalance = fullbalanceResult?.[0].result as bigint;
+  const { data: fullbalanceResult } = useReadContracts({
+    contracts: [
+      {
+        address: SuperUSDCAddress,
+        abi: ISuperTokenABI,
+        functionName: "balanceOf",
+        args: [smartAccountClient?.account?.address],
+      },
+      {
+        address: USDCAddress,
+        abi: fUSDCABI,
+        functionName: "balanceOf",
+        args: [smartAccountClient?.account?.address],
+      },
+    ],
+  });
+
+  // const superUsdcUserBalance = fullbalanceResult?.[0].result as bigint;
   const usdcUserBalance = fullbalanceResult?.[1].result as bigint;
 
   const directFeeToGym = parseEther(
@@ -105,7 +105,7 @@ export default function UserProfile() {
       data: encodeFunctionData({
         abi: fUSDCABI,
         functionName: "transfer",
-        args: [gymSmartAccount, directFeeToGym],
+        args: [gym?.address, directFeeToGym],
       }),
     },
     {
@@ -121,7 +121,7 @@ export default function UserProfile() {
       data: encodeFunctionData({
         abi: ISuperTokenABI,
         functionName: "upgradeTo",
-        args: [gymSmartAccount, maxCashbackAmount, "0x"],
+        args: [gym?.address, maxCashbackAmount, "0x"],
       }),
     },
   ];
@@ -176,7 +176,7 @@ export default function UserProfile() {
           <div className="flex items-center w-full justify-between">
             <span>USDC Balance:</span>
             <span>
-              {usdcBalance ? (
+              {usdcBalance !== undefined ? (
                 `$${formatFloat(usdcBalance)}`
               ) : (
                 <Skeleton className="h-[16px] w-[9rem] rounded-full" />
@@ -222,7 +222,11 @@ export default function UserProfile() {
 
         <Divider />
 
-        <Button className="bg-red-500 mx-4" onClick={handleUserMonthlyDeposit}>
+        <Button
+          className="bg-red-500 mx-4"
+          onClick={handleUserMonthlyDeposit}
+          disabled={gym == null}
+        >
           Subscribe
         </Button>
 

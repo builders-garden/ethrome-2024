@@ -41,7 +41,7 @@ export default function User() {
   const privyId = user?.id;
   const name = user?.google?.name || user?.farcaster?.displayName || "";
   const email = user?.email?.address || user?.google?.email || "";
-  const address = user?.wallet?.address || "";
+  // const address = user?.wallet?.address || "";
   useEffect(() => {
     if (ready && !authenticated && !isModalOpen) {
       login();
@@ -172,6 +172,7 @@ export default function User() {
     },
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function handleUserMonthlyDeposit() {
     const transactionHash =
       usdcUserBalance < parseEther(gymUserFee.toString())
@@ -268,13 +269,13 @@ export default function User() {
   return (
     <div className="w-full min-h-screen flex flex-col gap-4">
       <Welcome name={storedUser?.name} weeklyCompleted={2} weeklyGoal={4} />
-      {user && privyId ? (
+      {user && privyId && smartAccountClient?.account?.address ? (
         <OnboardUser
           ready={ready}
           authenticated={authenticated}
           name={name}
           email={email}
-          address={address}
+          address={smartAccountClient?.account?.address}
           privyId={privyId}
         />
       ) : null}
