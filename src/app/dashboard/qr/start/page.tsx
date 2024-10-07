@@ -99,7 +99,7 @@ export default function DashboardQR() {
           // flow rate
           flowRate,
           // bytes
-          "0x",
+          "0x0000000000000000000000000000000000000000",
         ],
       });
       console.log("result", result);

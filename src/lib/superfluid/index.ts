@@ -11,7 +11,7 @@
 //       smartAccount, // sender (smart account)
 //       receiver,
 //       flowRate,
-//       "0x" // no user data
+//       "0x0000000000000000000000000000000000000000" // no user data
 //     );
 //     await tx.wait();
 //     console.log("Flow created successfully!");

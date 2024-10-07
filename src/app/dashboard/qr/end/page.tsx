@@ -88,7 +88,7 @@ export default function DashboardQR() {
           // "0xA7c02289AcC571191b726467cF19beF9FCF2e7A8",
           scannedUser?.address,
           // bytes
-          "0x",
+          "0x0000000000000000000000000000000000000000",
         ],
       });
       console.log("result", result);

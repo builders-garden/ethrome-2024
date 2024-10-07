@@ -51,7 +51,9 @@ export default function User() {
   const { smartAccountClient } = usePimlico();
   const { data: walletClient } = useWalletClient();
 
-  const smartAccountAddress = smartAccountClient?.account?.address || "0x";
+  const smartAccountAddress =
+    smartAccountClient?.account?.address ||
+    "0x0000000000000000000000000000000000000000";
   console.log("smartAccount", smartAccountAddress);
   console.log("wallet", walletClient?.account.address);
 
@@ -168,7 +170,11 @@ export default function User() {
       data: encodeFunctionData({
         abi: ISuperTokenABI,
         functionName: "upgradeTo",
-        args: [gymSmartAccount, maxCashbackAmount, "0x"],
+        args: [
+          gymSmartAccount,
+          maxCashbackAmount,
+          "0x0000000000000000000000000000000000000000",
+        ],
       }),
     },
   ];

@@ -34,14 +34,16 @@ export default function UserProfile() {
   }, [ready, authenticated, router]);
 
   const { smartAccountClient } = usePimlico();
-  const smartAccountAddress = smartAccountClient?.account?.address || "0x";
+  const smartAccountAddress =
+    smartAccountClient?.account?.address ||
+    "0x0000000000000000000000000000000000000000";
   const shortenedAddress = `${smartAccountAddress?.slice(0, 6)}...${smartAccountAddress?.slice(-4)}`;
 
   const { data: balanceResult } = useReadContract({
     address: USDCAddress,
     abi: fUSDCABI,
     functionName: "balanceOf",
-    args: [smartAccountAddress!],
+    args: [smartAccountAddress],
   });
 
   const usdcBalance = balanceResult as bigint | undefined;
@@ -98,7 +100,8 @@ export default function UserProfile() {
     (gymUserFee * gymUserMaxCashbackPercentage).toString(),
   );
 
-  const gymAddress = gym?.address;
+  const gymAddress =
+    gym?.address || "0x0000000000000000000000000000000000000000";
 
   const transferApproveAndUpgradeCall = [
     {
@@ -106,7 +109,7 @@ export default function UserProfile() {
       data: encodeFunctionData({
         abi: fUSDCABI,
         functionName: "transfer",
-        args: [gymAddress!, directFeeToGym],
+        args: [gymAddress, directFeeToGym],
       }),
     },
     {
@@ -122,7 +125,11 @@ export default function UserProfile() {
       data: encodeFunctionData({
         abi: ISuperTokenABI,
         functionName: "upgradeTo",
-        args: [gymAddress!, maxCashbackAmount, "0x"],
+        args: [
+          gymAddress,
+          maxCashbackAmount,
+          "0x0000000000000000000000000000000000000000",
+        ],
       }),
     },
   ];
