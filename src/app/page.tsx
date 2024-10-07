@@ -59,13 +59,13 @@ export default function Home() {
               About NaaamoFit
             </h2>
             <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Revolutionizing the Industry
+              Revolutionizing the Gyms
             </p>
             <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat.
+              NaaamoFit enables gyms to accept cryptocurrency payments easly,
+              using Account Abstraction for a Web2 experience. Users earn
+              cashback for time spent in the gym, with no wallet management for
+              nobody
             </p>
           </div>
 
@@ -78,12 +78,13 @@ export default function Home() {
                     {/* Add icon here */}
                   </div>
                   <p className="ml-16 text-lg leading-6 font-medium text-gray-900">
-                    Feature 1
+                    Web2-like experience
                   </p>
                 </dt>
                 <dd className="mt-2 ml-16 text-base text-gray-500">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  NaaamoFit uses Account Abstraction to enable users to pay with
+                  cryptocurrency without wallet management and the same for gym
+                  owners
                 </dd>
               </div>
 
@@ -93,12 +94,12 @@ export default function Home() {
                     {/* Add icon here */}
                   </div>
                   <p className="ml-16 text-lg leading-6 font-medium text-gray-900">
-                    Feature 2
+                    Streamed Cashback
                   </p>
                 </dt>
                 <dd className="mt-2 ml-16 text-base text-gray-500">
-                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                  laboris nisi ut aliquip ex ea commodo consequat.
+                  Users earn a small amount of cashback for each second spent in
+                  the gym, streamed directly to their wallets
                 </dd>
               </div>
             </dl>
