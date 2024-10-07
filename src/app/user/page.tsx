@@ -41,7 +41,7 @@ export default function User() {
   const privyId = user?.id;
   const name = user?.google?.name || user?.farcaster?.displayName || "";
   const email = user?.email?.address || user?.google?.email || "";
-  const address = user?.wallet?.address || "";
+  // const address = user?.wallet?.address || "";
   useEffect(() => {
     if (ready && !authenticated && !isModalOpen) {
       login();
@@ -51,7 +51,10 @@ export default function User() {
   const { smartAccountClient } = usePimlico();
   const { data: walletClient } = useWalletClient();
 
-  console.log("smartAccount", smartAccountClient?.account?.address);
+  const smartAccountAddress =
+    smartAccountClient?.account?.address ||
+    "0x0000000000000000000000000000000000000000";
+  console.log("smartAccount", smartAccountAddress);
   console.log("wallet", walletClient?.account.address);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -113,15 +116,18 @@ export default function User() {
           address: SuperUSDCAddress,
           abi: ISuperTokenABI,
           functionName: "balanceOf",
-          args: [smartAccountClient?.account?.address],
+          args: [smartAccountAddress],
         },
         {
           address: USDCAddress,
           abi: fUSDCABI,
           functionName: "balanceOf",
-          args: [smartAccountClient?.account?.address],
+          args: [smartAccountAddress],
         },
       ],
+      query: {
+        enabled: smartAccountClient !== undefined,
+      },
     });
 
   const superUsdcUserBalance = balanceResult?.[0].result as bigint;
@@ -131,7 +137,7 @@ export default function User() {
     if (firstBalance === undefined && superUsdcUserBalance !== undefined) {
       setFirstBalance(superUsdcUserBalance);
     }
-  }, [superUsdcUserBalance]);
+  }, [firstBalance, superUsdcUserBalance]);
 
   if (!isFetchingBalance) {
     console.log("superUsdcUserBalance", superUsdcUserBalance);
@@ -167,7 +173,11 @@ export default function User() {
       data: encodeFunctionData({
         abi: ISuperTokenABI,
         functionName: "upgradeTo",
-        args: [gymSmartAccount, maxCashbackAmount, "0x"],
+        args: [
+          gymSmartAccount,
+          maxCashbackAmount,
+          "0x0000000000000000000000000000000000000000",
+        ],
       }),
     },
   ];
@@ -184,7 +194,7 @@ export default function User() {
                   abi: fUSDCABI,
                   functionName: "mint",
                   args: [
-                    smartAccountClient?.account?.address,
+                    smartAccountAddress,
                     parseEther(gymUserFee.toString()),
                   ],
                 }),
@@ -249,16 +259,13 @@ export default function User() {
     }
   }, [ready, authenticated]);
 
-  console.log(
-    "smartAccountClient?.account?.address",
-    smartAccountClient?.account?.address,
-  );
+  console.log("smartAccountClient?.account?.address", smartAccountAddress);
 
   const { loading: loadingQueryRes, data: dataQueryRes } = useQuery(
     activeStreamsQuery,
     {
       variables: {
-        receiver: smartAccountClient?.account?.address.toLocaleLowerCase(),
+        receiver: smartAccountAddress.toLocaleLowerCase(),
       },
       fetchPolicy: "network-only",
     },
@@ -269,13 +276,13 @@ export default function User() {
   return (
     <div className="w-full min-h-screen flex flex-col gap-4">
       <Welcome name={storedUser?.name} weeklyCompleted={2} weeklyGoal={4} />
-      {user && privyId ? (
+      {user && privyId && smartAccountAddress ? (
         <OnboardUser
           ready={ready}
           authenticated={authenticated}
           name={name}
           email={email}
-          address={address}
+          address={smartAccountAddress}
           privyId={privyId}
         />
       ) : null}

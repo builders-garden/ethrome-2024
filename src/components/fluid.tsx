@@ -122,7 +122,7 @@ const Fluid = () => {
           // receiver
           "0xA7c02289AcC571191b726467cF19beF9FCF2e7A8",
           // bytes
-          "0x",
+          "0x0000000000000000000000000000000000000000",
         ],
       });
       console.log("result", result);
@@ -135,8 +135,8 @@ const Fluid = () => {
     <div className="flex justify-center items-center h-full">
       <div className="flex flex-col gap-6 items-center text-center max-w-3xl px-4">
         Smart account address: {smartAccount ? smartAccount : "Not available"}
-        <button onClick={handleCreateFlow}>start flow</button>
-        <button onClick={handleDeleteFlow}>stop flow</button>
+        <button onClick={() => handleCreateFlow()}>start flow</button>
+        <button onClick={() => handleDeleteFlow()}>stop flow</button>
         <h1>ETH Balance</h1>
         <code>
           {`

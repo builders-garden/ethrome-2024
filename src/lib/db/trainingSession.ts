@@ -1,8 +1,12 @@
 import { TrainingSession } from "@prisma/client";
 import prisma from "./prisma";
 
+type PartialTrainingSession = {
+  [K in keyof TrainingSession]?: TrainingSession[K];
+};
+
 export async function getTrainingSessionsByUserId(
-  userId: string
+  userId: string,
 ): Promise<TrainingSession[]> {
   return await prisma.trainingSession.findMany({
     orderBy: {
@@ -15,7 +19,7 @@ export async function getTrainingSessionsByUserId(
 }
 
 export async function getTrainingSessionById(
-  id: string
+  id: string,
 ): Promise<TrainingSession | null> {
   return await prisma.trainingSession.findUnique({
     where: {
@@ -37,7 +41,7 @@ export async function createTrainingSession(data: {
 
 export async function updateTrainingSession(
   id: string,
-  data: TrainingSession
+  data: PartialTrainingSession,
 ): Promise<TrainingSession> {
   return await prisma.trainingSession.update({
     where: {
@@ -48,7 +52,7 @@ export async function updateTrainingSession(
 }
 
 export async function deleteTrainingSession(
-  id: string
+  id: string,
 ): Promise<TrainingSession> {
   return await prisma.trainingSession.delete({
     where: {

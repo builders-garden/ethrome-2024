@@ -1,32 +1,33 @@
 import {
   createTrainingSession,
   getTrainingSessionById,
-  getTrainingSessionsByUserId,
   getUserById,
   updateTrainingSession,
   updateUser,
-  TrainingSessionStatus,
+  getGymById,
 } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 
+export const dynamic = "force-dynamic";
+
 const postHandler = async (req: NextRequest) => {
-  const { userId } = await req.json();
-  if (!userId) {
+  const { gymId, status } = await req.json();
+  if (!gymId || !status) {
     return NextResponse.json(
       {
         status: "nok",
-        error: "Missing userId!",
+        error: "Missing params!",
       },
       { status: 400, statusText: "Bad Request" },
     );
   }
-  const user = await getUserById(userId);
-  if (!user) {
+  const gym = await getGymById(gymId);
+  if (!gym) {
     return NextResponse.json(
       {
         status: "nok",
-        error: "User not found",
+        error: "Gym not found",
       },
       { status: 404, statusText: "Not Found" },
     );
@@ -34,9 +35,9 @@ const postHandler = async (req: NextRequest) => {
   try {
     const trainingSession = await createTrainingSession({
       id: uuid(),
-      status: TrainingSessionStatus.ENTERED,
-      gymId: user.gymId,
-      userId,
+      status,
+      gymId,
+      // userId,
     });
     return NextResponse.json(
       { status: "ok", data: trainingSession },
@@ -74,12 +75,12 @@ const getHandler = async (req: NextRequest) => {
 };
 
 const putHandler = async (req: NextRequest) => {
-  const { userId } = await req.json();
-  if (!userId) {
+  const { id, userId, status } = await req.json();
+  if (!id || !userId || !status) {
     return NextResponse.json(
       {
         status: "nok",
-        error: "Missing userId!",
+        error: "Missing params!",
       },
       { status: 400, statusText: "Bad Request" },
     );
@@ -94,27 +95,22 @@ const putHandler = async (req: NextRequest) => {
       { status: 404, statusText: "Not Found" },
     );
   }
-  const existingTrainingSessions = await getTrainingSessionsByUserId(userId);
-  if (existingTrainingSessions?.length == 0) {
-    return NextResponse.json({
-      status: "nok",
-      error: `Missing valid training session for user ${userId}`,
-    });
-  }
-  const lastTrainingSession = existingTrainingSessions[0];
-  if (lastTrainingSession.status != TrainingSessionStatus.ENTERED) {
-    return NextResponse.json({
-      status: "nok",
-      error: "This user has not a valid training session",
-    });
+  const existingTrainingSession = await getTrainingSessionById(id);
+  if (!existingTrainingSession) {
+    return NextResponse.json(
+      {
+        status: "nok",
+        error: "Training session not found",
+      },
+      { status: 404, statusText: "Not Found" },
+    );
   }
   try {
     // TODO: calculate here the stream AMOUNT
     const cashback = 1;
-    const result = await updateTrainingSession(lastTrainingSession.id, {
-      ...lastTrainingSession,
-      status: TrainingSessionStatus.LEFT,
-      cashback,
+    const result = await updateTrainingSession(id, {
+      status,
+      userId,
     });
     // update user cashback fields
     // check if it's a new month
