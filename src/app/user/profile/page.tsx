@@ -126,11 +126,7 @@ export default function UserProfile() {
       data: encodeFunctionData({
         abi: ISuperTokenABI,
         functionName: "upgradeTo",
-        args: [
-          gymAddress,
-          maxCashbackAmount,
-          "0x0000000000000000000000000000000000000000",
-        ],
+        args: [gymAddress, maxCashbackAmount, "0x"],
       }),
     },
   ];
