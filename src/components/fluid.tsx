@@ -135,8 +135,8 @@ const Fluid = () => {
     <div className="flex justify-center items-center h-full">
       <div className="flex flex-col gap-6 items-center text-center max-w-3xl px-4">
         Smart account address: {smartAccount ? smartAccount : "Not available"}
-        <button onClick={handleCreateFlow}>start flow</button>
-        <button onClick={handleDeleteFlow}>stop flow</button>
+        <button onClick={() => handleCreateFlow()}>start flow</button>
+        <button onClick={() => handleDeleteFlow()}>stop flow</button>
         <h1>ETH Balance</h1>
         <code>
           {`

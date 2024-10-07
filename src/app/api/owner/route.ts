@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createOwner, getOwnerById } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -9,7 +11,7 @@ export async function GET(request: Request) {
       console.error("Missing required fields");
       return NextResponse.json(
         { status: "nok", error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const owner = await getOwnerById(id);
@@ -19,14 +21,14 @@ export async function GET(request: Request) {
     } else {
       return NextResponse.json(
         { status: "nok", error: "Owner not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
   } catch (error) {
     console.error("Error getting owner:", error);
     return NextResponse.json(
       { status: "nok", error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -40,7 +42,7 @@ export async function POST(request: Request) {
     if (!id || !name || !email) {
       return NextResponse.json(
         { status: "nok", error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -57,7 +59,7 @@ export async function POST(request: Request) {
     console.error("Error creating gym:", error);
     return NextResponse.json(
       { status: "nok", error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

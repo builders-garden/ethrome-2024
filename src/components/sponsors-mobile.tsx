@@ -32,7 +32,7 @@ const SponsorsMobile = () => {
     });
 
     return () => {
-      animation.then((result) => result && result.stop());
+      animation.then((result) => result && result.stop && result.stop());
     };
   }, [controls, containerWidth]);
 

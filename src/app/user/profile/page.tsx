@@ -34,12 +34,14 @@ export default function UserProfile() {
   }, [ready, authenticated, router]);
 
   const { smartAccountClient } = usePimlico();
+  const smartAccountAddress = smartAccountClient?.account?.address || "0x";
+  const shortenedAddress = `${smartAccountAddress?.slice(0, 6)}...${smartAccountAddress?.slice(-4)}`;
 
   const { data: balanceResult } = useReadContract({
     address: USDCAddress,
     abi: fUSDCABI,
     functionName: "balanceOf",
-    args: [smartAccountClient?.account?.address],
+    args: [smartAccountAddress!],
   });
 
   const usdcBalance = balanceResult as bigint | undefined;
@@ -54,17 +56,14 @@ export default function UserProfile() {
     });
   };
 
-  const smartAccountAddress = smartAccountClient?.account?.address;
-  const shortenedAddress = `${smartAccountAddress?.slice(0, 6)}...${smartAccountAddress?.slice(-4)}`;
-
-  const fetchGymOfUser = async () => {
-    const data = await fetch(`/api/user?userId=${user?.id}`).then((res) =>
-      res.json(),
-    );
-    setGym(data?.data?.Gym);
-  };
-
   useEffect(() => {
+    const fetchGymOfUser = async () => {
+      const data = await fetch(`/api/user?userId=${user?.id}`).then((res) =>
+        res.json(),
+      );
+      setGym(data?.data?.Gym);
+    };
+
     if (user?.id) {
       fetchGymOfUser();
     }
@@ -78,13 +77,13 @@ export default function UserProfile() {
         address: SuperUSDCAddress,
         abi: ISuperTokenABI,
         functionName: "balanceOf",
-        args: [smartAccountClient?.account?.address],
+        args: [smartAccountAddress],
       },
       {
         address: USDCAddress,
         abi: fUSDCABI,
         functionName: "balanceOf",
-        args: [smartAccountClient?.account?.address],
+        args: [smartAccountAddress],
       },
     ],
   });
@@ -99,13 +98,15 @@ export default function UserProfile() {
     (gymUserFee * gymUserMaxCashbackPercentage).toString(),
   );
 
+  const gymAddress = gym?.address;
+
   const transferApproveAndUpgradeCall = [
     {
       to: USDCAddress,
       data: encodeFunctionData({
         abi: fUSDCABI,
         functionName: "transfer",
-        args: [gym?.address, directFeeToGym],
+        args: [gymAddress!, directFeeToGym],
       }),
     },
     {
@@ -121,7 +122,7 @@ export default function UserProfile() {
       data: encodeFunctionData({
         abi: ISuperTokenABI,
         functionName: "upgradeTo",
-        args: [gym?.address, maxCashbackAmount, "0x"],
+        args: [gymAddress!, maxCashbackAmount, "0x"],
       }),
     },
   ];
@@ -137,7 +138,7 @@ export default function UserProfile() {
                   abi: fUSDCABI,
                   functionName: "mint",
                   args: [
-                    smartAccountClient?.account?.address,
+                    smartAccountAddress,
                     parseEther(gymUserFee.toString()),
                   ],
                 }),
@@ -224,15 +225,15 @@ export default function UserProfile() {
 
         <Button
           className="bg-red-500 mx-4"
-          onClick={handleUserMonthlyDeposit}
-          disabled={gym == null}
+          onClick={() => handleUserMonthlyDeposit()}
+          disabled={!gym}
         >
           Subscribe
         </Button>
 
         <Divider />
 
-        <Button className="bg-red-500 mx-4" onClick={logout}>
+        <Button className="bg-red-500 mx-4" onClick={() => logout()}>
           Logout
         </Button>
       </div>

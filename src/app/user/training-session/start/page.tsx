@@ -8,11 +8,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
-export default function UserQr() {
+export default function TrainingSessionStart() {
   const router = useRouter();
   const { ready, authenticated, user } = usePrivy();
   const searchParams = useSearchParams();
-  // get query params
   const id = searchParams.get("id");
 
   useEffect(() => {
@@ -44,7 +43,7 @@ export default function UserQr() {
       }
     };
     updateTrainingSession();
-  }, [user]);
+  }, [id, user]);
 
   return (
     <div className="flex min-h-screen flex-col bg-background items-center">

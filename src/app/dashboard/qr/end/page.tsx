@@ -122,7 +122,7 @@ export default function DashboardQR() {
       }
     }, 5000);
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  }, [newTrainingSession]);
+  }, [enableConfirm, newTrainingSession]);
 
   console.log("deleteFlowResult", deleteFlowResult);
 

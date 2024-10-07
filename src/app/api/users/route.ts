@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getUsersByGymId } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -10,7 +12,7 @@ export async function GET(request: Request) {
       console.error("Missing params", gymId);
       return NextResponse.json(
         { status: "nok", error: "Missing gymId" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -21,7 +23,7 @@ export async function GET(request: Request) {
     console.error("Error getting gym users:", error);
     return NextResponse.json(
       { status: "nok", error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

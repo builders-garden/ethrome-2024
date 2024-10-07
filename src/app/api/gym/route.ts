@@ -3,6 +3,8 @@ import { v4 as uuidv4 } from "uuid";
 import { createGym, getGymsByOwnerId } from "@/lib/db";
 import { parseEther } from "viem";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -12,7 +14,7 @@ export async function GET(request: Request) {
       console.error("Missing params", ownerId);
       return NextResponse.json(
         { status: "nok", error: "Missing ownerId parameter" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -22,7 +24,7 @@ export async function GET(request: Request) {
     console.error("Error getting gyms:", error);
     return NextResponse.json(
       { status: "nok", error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -37,15 +39,21 @@ export async function POST(request: Request) {
       console.error("Missing required fields", body);
       return NextResponse.json(
         { status: "nok", error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    if(cashbackPercentage < 0 || cashbackPercentage > 100) {
-      console.error("Cashback percentage must be between 0 and 100", cashbackPercentage);
+    if (cashbackPercentage < 0 || cashbackPercentage > 100) {
+      console.error(
+        "Cashback percentage must be between 0 and 100",
+        cashbackPercentage,
+      );
       return NextResponse.json(
-        { status: "nok", error: "Cashback percentage must be between 0 and 100" },
-        { status: 400 }
+        {
+          status: "nok",
+          error: "Cashback percentage must be between 0 and 100",
+        },
+        { status: 400 },
       );
     }
 
@@ -58,7 +66,12 @@ export async function POST(request: Request) {
       ownerId,
       createdAt: new Date(),
       updatedAt: new Date(),
-      flowRate: parseEther((monthlyFee * (cashbackPercentage/100) / (365/12 * 24 * 60 * 60)).toFixed(18)).toString(),
+      flowRate: parseEther(
+        (
+          (monthlyFee * (cashbackPercentage / 100)) /
+          ((365 / 12) * 24 * 60 * 60)
+        ).toFixed(18),
+      ).toString(),
     });
     console.log("Gym created", gym);
     return NextResponse.json({ data: gym, status: "ok" }, { status: 200 });
@@ -66,7 +79,7 @@ export async function POST(request: Request) {
     console.error("Error creating gym:", error);
     return NextResponse.json(
       { status: "nok", error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

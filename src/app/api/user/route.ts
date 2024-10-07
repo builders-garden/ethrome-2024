@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createUser, getUserById } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -10,7 +12,7 @@ export async function GET(request: Request) {
       console.error("Missing params", userId);
       return NextResponse.json(
         { status: "nok", error: "Missing userId" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -19,7 +21,7 @@ export async function GET(request: Request) {
     if (!user) {
       return NextResponse.json(
         { status: "nok", error: "User not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -28,7 +30,7 @@ export async function GET(request: Request) {
     console.error("Error getting user:", error);
     return NextResponse.json(
       { status: "nok", error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -42,7 +44,7 @@ export async function POST(request: Request) {
       console.error("Missing params", userId, name, email, address, gymId);
       return NextResponse.json(
         { status: "nok", error: "Missing params" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -67,7 +69,7 @@ export async function POST(request: Request) {
     console.error("Error creating user:", error);
     return NextResponse.json(
       { status: "nok", error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

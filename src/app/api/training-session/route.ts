@@ -9,6 +9,8 @@ import {
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 
+export const dynamic = "force-dynamic";
+
 const postHandler = async (req: NextRequest) => {
   const { gymId, status } = await req.json();
   if (!gymId || !status) {
