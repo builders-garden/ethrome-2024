@@ -94,7 +94,7 @@ const Fluid = () => {
           // flow rate
           flowRate,
           // bytes
-          "0x0000000000000000000000000000000000000000",
+          "0x",
         ],
       });
       console.log("result", result);
