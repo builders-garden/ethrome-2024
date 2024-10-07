@@ -125,6 +125,9 @@ export default function User() {
           args: [smartAccountAddress],
         },
       ],
+      query: {
+        enabled: smartAccountClient !== undefined,
+      },
     });
 
   const superUsdcUserBalance = balanceResult?.[0].result as bigint;

@@ -34,9 +34,7 @@ export default function UserProfile() {
   }, [ready, authenticated, router]);
 
   const { smartAccountClient } = usePimlico();
-  const smartAccountAddress =
-    smartAccountClient?.account?.address ||
-    "0x0000000000000000000000000000000000000000";
+  const smartAccountAddress = smartAccountClient?.account?.address;
   const shortenedAddress = `${smartAccountAddress?.slice(0, 6)}...${smartAccountAddress?.slice(-4)}`;
 
   const { data: balanceResult } = useReadContract({
@@ -44,6 +42,9 @@ export default function UserProfile() {
     abi: fUSDCABI,
     functionName: "balanceOf",
     args: [smartAccountAddress],
+    query: {
+      enabled: smartAccountClient !== undefined,
+    },
   });
 
   const usdcBalance = balanceResult as bigint | undefined;
